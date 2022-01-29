@@ -1,13 +1,19 @@
 const express = require("express");
+const cors = require("cors");
+const api = require("./api");
+
 const app = express();
 
-const cors = require("cors");
 app.use(cors());
+app.use(express.json());
 
-const bodyParser = require("body-parser");
-app.use(bodyParser.json());
-
-const api = require("./api");
 app.use("/api/", api);
+
+app.use((error, req, res, next) => {
+	if (error.type === "entity.parse.failed")
+		return res.status(400).send(error.message);
+
+	next();
+});
 
 app.listen(3000, () => console.log("Server is running!"));

@@ -9,28 +9,34 @@ let boards = [{
 	lists: [{title: "First list", id: "1"}, {title: "List", id: "2"}],
 }, {
 	title: "Board 2", isFavourite: false, id: "2", status: "READY",
-	users: [{username: "Username 1", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: true},
-		{username: "Username 2", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: false}],
+	users: [{username: "Username 1", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: false},
+		{username: "Username 2", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: true}],
 	lists: [{title: "First list", id: "1"}, {title: "List", id: "2"}],
 }];
 
 const getBoard = id => {
 	const board = boards.filter(cur => cur.id === id);
 	if (board.length === 1) return board[0];
+
 	return null;
 };
 
 router.use(authenticated);
-router.use(hasAccess);
 
-router.get("/:boardId", (req, res) => {
+router.get("/:boardId", async (req, res) => {
+	const code = await hasAccess(req, boards);
+	if (code !== 200) return res.sendStatus(code);
+
 	const board = getBoard(req.params.boardId);
 	if (board === null) return res.sendStatus(404);
 
 	res.send(board);
 });
 
-router.delete("/:boardId", isOwner, (req, res) => {
+router.delete("/:boardId", async (req, res) => {
+	const code = await isOwner(req, boards);
+	if (code !== 200) return res.sendStatus(code);
+
 	const newBoards = boards.filter(cur => cur.id !== req.params.boardId);
 	if (newBoards.length === boards.length) res.sendStatus(404);
 
@@ -38,11 +44,14 @@ router.delete("/:boardId", isOwner, (req, res) => {
 	res.sendStatus(200);
 });
 
-router.patch("/:boardId", (req, res) => {
-	const id = req.params.boardId;
-	const board = getBoard(id);
+router.patch("/:boardId", async (req, res) => {
+	const code = await isOwner(req, boards);
+	if (code !== 200) return res.sendStatus(code);
+
+	const board = getBoard(req.params.boardId);
 	if (board === null) return res.sendStatus(404);
 
+	//TODO
 
 	res.sendStatus(200);
 });
