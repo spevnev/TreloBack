@@ -1,6 +1,5 @@
 let boards = [{
 	title: "Board 1",
-	isFavourite: false,
 	id: "1",
 	users: [{username: "test", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: true}, {
 		username: "Username 2", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: false,
@@ -8,9 +7,7 @@ let boards = [{
 	lists: [{title: "First list", id: "1"}, {title: "List", id: "2"}],
 }, {
 	title: "Board 2",
-	isFavourite: false,
 	id: "2",
-	status: "READY",
 	users: [{username: "test", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: false}, {
 		username: "Username 2", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: true,
 	}],

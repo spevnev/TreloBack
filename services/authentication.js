@@ -9,7 +9,7 @@ const verify = async token => {
 
 const authenticated = async (req, res, next) => {
 	const [valid, data] = await verify(req.headers.authorization);
-	if (!valid) res.sendStatus(401);
+	if (!valid) return res.sendStatus(401);
 
 	next();
 };

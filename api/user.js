@@ -6,7 +6,7 @@ const router = express.Router();
 
 const validate = (name, pass) => name && pass && name.length >= 4 && pass.length >= 4;
 
-// -~=TEMP=~-
+//TODO:  TEMP
 hash("test").then(password => setUsers([{username: "test", password}]));
 
 router.get("/", async (req, res) => {
@@ -26,7 +26,7 @@ router.post("/signup", async (req, res) => {
 	if (getUsers().filter(cur => cur.username === username).length !== 0) return res.send([false, "This username is already taken!"]);
 
 	const user = {username, userIcon};
-	getUsers().push({...user, password: await hash(password)});
+	getUsers().push({...user, password: await hash(password), boards: []});
 
 	res.send([true, {token: await createJwt({username}), user}]);
 });
