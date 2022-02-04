@@ -1,7 +1,7 @@
 const {authenticated, hasAccess, isOwner} = require("../services/authentication");
 const express = require("express");
 const router = express.Router();
-const {getBoards, setBoards} = require("./tempStorage");
+const {getBoards, setBoards, setCards, getCards} = require("./tempStorage");
 
 router.use(authenticated);
 
@@ -27,7 +27,7 @@ router.delete("/:boardId", async (req, res) => {
 	res.sendStatus(200);
 });
 
-router.patch("/:boardId/settings", async (req, res) => {
+router.put("/:boardId", async (req, res) => {
 	const code = await isOwner(req, getBoards());
 	if (code !== 200) return res.sendStatus(code);
 
@@ -37,7 +37,20 @@ router.patch("/:boardId/settings", async (req, res) => {
 	const id = req.params.boardId;
 	if (id === null) return res.sendStatus(401);
 
-	setBoards(getBoards().map(cur => cur.id === id ? {...cur, ...body} : cur));
+	setBoards(getBoards().map(cur => cur.id === id ? body.board : cur));
+
+	res.sendStatus(200);
+});
+
+router.post("/", async (req, res) => {
+	const body = req.body;
+	if (!body) return res.sendStatus(400);
+
+	const boards = getBoards();
+	if (boards.filter(cur => cur.id === body.board.id).length === 1) return res.sendStatus(400);
+
+	setBoards([...boards, body.board]);
+	setCards([...getCards(), {id: body.board.id, cards: []}]);
 
 	res.sendStatus(200);
 });

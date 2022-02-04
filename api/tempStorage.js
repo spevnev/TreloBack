@@ -1,17 +1,11 @@
 let boards = [{
-	title: "Board 1",
-	id: "1",
-	users: [{username: "test", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: true}, {
+	title: "Board 1", id: "1", users: [{username: "test", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: true}, {
 		username: "Username 2", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: false,
-	}],
-	lists: [{title: "First list", id: "1"}, {title: "List", id: "2"}],
+	}], lists: [{title: "First list", id: "1"}, {title: "List", id: "2"}],
 }, {
-	title: "Board 2",
-	id: "2",
-	users: [{username: "test", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: false}, {
+	title: "Board 2", id: "2", users: [{username: "test", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: false}, {
 		username: "Username 2", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png", isOwner: true,
-	}],
-	lists: [{title: "First list", id: "1"}, {title: "List", id: "2"}],
+	}], lists: [{title: "First list", id: "1"}, {title: "List", id: "2"}],
 }];
 const getBoards = () => boards;
 const setBoards = newBoards => boards = newBoards;
@@ -62,9 +56,10 @@ let cards = [{
 	}, {title: "Card 2-2", id: "4", listId: "2", description: "Description", images: [], files: [], assigned: []}],
 }];
 const getCards = () => cards;
+const setCards = newCards => cards = newCards;
 
 let users = [];
 const getUsers = () => users;
 const setUsers = newUsers => users = newUsers;
 
-module.exports = {getBoards, setBoards, getCards, getUsers, setUsers};
+module.exports = {getBoards, setBoards, getCards, setCards, getUsers, setUsers};
