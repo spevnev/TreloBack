@@ -12,8 +12,8 @@ const createJwt = data => new Promise((resolve, reject) => {
 
 const verifyJwt = token => new Promise((resolve, reject) => {
 	jwt.verify(token, JWT_KEY, {}, (err, res) => {
-		if (res) resolve([true, res]);
-		if (err) resolve([false, err]);
+		if (res) resolve([null, res]);
+		if (err) resolve([err]);
 	});
 });
 

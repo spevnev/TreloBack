@@ -16,7 +16,10 @@ let cards = [{
 		id: "4",
 		listId: "1",
 		description: "Description",
-		images: ["https://www.uedvision.com.ua/wp-content/uploads/2020/02/placeholder.png", "https://farm3.staticflickr.com/2821/33503322524_4e67143f45_k.jpg?momo_cache_bg_uuid=ac7fdf60-5867-4a87-bf83-2ded30d61c59"],
+		images: [{id: "1", src: "https://www.uedvision.com.ua/wp-content/uploads/2020/02/placeholder.png"}, {
+			id: "2",
+			src: "https://farm3.staticflickr.com/2821/33503322524_4e67143f45_k.jpg?momo_cache_bg_uuid=ac7fdf60-5867-4a87-bf83-2ded30d61c59",
+		}],
 		files: [{filename: "sth.exe", id: "1"}],
 		assigned: [{username: "Somebody", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png"}],
 	}, {
@@ -34,7 +37,10 @@ let cards = [{
 		id: "1",
 		listId: "1",
 		description: "Description",
-		images: ["https://www.uedvision.com.ua/wp-content/uploads/2020/02/placeholder.png", "https://farm3.staticflickr.com/2821/33503322524_4e67143f45_k.jpg?momo_cache_bg_uuid=ac7fdf60-5867-4a87-bf83-2ded30d61c59"],
+		images: [{id: "7", src: "https://www.uedvision.com.ua/wp-content/uploads/2020/02/placeholder.png"}, {
+			id: "15",
+			src: "https://farm3.staticflickr.com/2821/33503322524_4e67143f45_k.jpg?momo_cache_bg_uuid=ac7fdf60-5867-4a87-bf83-2ded30d61c59",
+		}],
 		files: [{filename: "sth.exe", id: "1"}],
 		assigned: [{username: "Somebody", userIcon: "https://www.manufacturingusa.com/sites/manufacturingusa.com/files/default.png"}],
 	}, {
@@ -50,7 +56,7 @@ let cards = [{
 		id: "3",
 		listId: "2",
 		description: "Description",
-		images: ["https://www.uedvision.com.ua/wp-content/uploads/2020/02/placeholder.png"],
+		images: [{id: "asd", src: "https://www.uedvision.com.ua/wp-content/uploads/2020/02/placeholder.png"}],
 		files: [],
 		assigned: [],
 	}, {title: "Card 2-2", id: "4", listId: "2", description: "Description", images: [], files: [], assigned: []}],

@@ -1,25 +1,26 @@
 const {verifyJwt} = require("../services/jwt");
+const {getBoards} = require("../api/tempStorage");
 
 const verify = async token => {
-	if (!token || !token.startsWith("Bearer ")) return [false, null];
+	if (!token || !token.startsWith("Bearer ")) return ["Error"];
 
 	return await verifyJwt(token.split("Bearer ")[1]);
 };
 
 
 const authenticated = async (req, res, next) => {
-	const [valid, data] = await verify(req.headers.authorization);
-	if (!valid) return res.sendStatus(401);
+	const [error, data] = await verify(req.headers.authorization);
+	if (!data) return res.status(401).send(error);
 
 	next();
 };
 
 
-const isOwner = async (req, boards) => {
-	const [valid, data] = await verify(req.headers.authorization);
-	if (!valid) return 401;
+const isOwner = async (req, boardId) => {
+	const [error, data] = await verify(req.headers.authorization);
+	if (error !== null) return 401;
 
-	const board = boards.filter(cur => cur.id === req.params.boardId);
+	const board = getBoards().filter(cur => cur.id === (boardId || req.params.boardId));
 	if (board.length === 0) return 404;
 
 	if (board[0].users.filter(cur => cur.username === data.username && cur.isOwner).length !== 1) return 401;
@@ -28,8 +29,8 @@ const isOwner = async (req, boards) => {
 };
 
 const hasAccess = async (req, boards) => {
-	const [valid, data] = await verify(req.headers.authorization);
-	if (!valid) return 401;
+	const [error, data] = await verify(req.headers.authorization);
+	if (error !== null) return 401;
 
 	const board = boards.filter(cur => cur.id === req.params.boardId);
 	if (board.length === 0) return 404;
