@@ -2,6 +2,7 @@ const {hash, verify} = require("../services/hash");
 const {createJwt} = require("../services/jwt");
 const {getUsers, setUsers, getBoards, setBoards, setCards, getCards} = require("./tempStorage");
 const {isOwner, authenticated} = require("../services/authentication");
+const validate = require("./schemas/user");
 const express = require("express");
 
 const router = express.Router();
@@ -17,20 +18,30 @@ hash("test").then(test => {
 });
 
 
+router.get("/", authenticated, async (req, res) => {
+	const data = res.locals.data;
+	const user = getUsers().filter(cur => cur.username === data.username)[0];
+
+	res.send({...user, userIcon: undefined, password: undefined}); //TODO: remove userIcon: undefined
+});
+
 router.post("/signup", async (req, res) => {
+	if (!validate.signup(req.body)) return res.sendStatus(400);
 	const {username, password, userIcon} = req.body;
-	if (!username || !password || username.length < 4 || password.length < 4) return res.sendStatus(400);
+
 	if (getUsers().filter(cur => cur.username === username).length !== 0) return res.send(["This username is already taken!"]);
 
 	const user = {username, userIcon};
-	setUsers(...getUsers(), {...user, password: await hash(password), boards: []});
+	setUsers([...getUsers(), {...user, password: await hash(password), boards: []}]);
 
 	res.send([null, {token: await createJwt({username}), user}]);
 });
 
 router.post("/login", async (req, res) => {
+	if (!validate.login(req.body)) return res.sendStatus(400);
 	const {username, password} = req.body;
-	if (!username || !password || username.length < 4 || password.length < 4 || getUsers().filter(cur => cur.username === username).length === 0) return res.sendStatus(400);
+
+	if (getUsers().filter(cur => cur.username === username).length === 0) return res.sendStatus(400);
 
 	const user = getUsers().filter(cur => cur.username === username);
 	if (user.length !== 1) return res.send(["Invalid username or password"]);
@@ -40,16 +51,9 @@ router.post("/login", async (req, res) => {
 	res.send([null, {token: await createJwt({username}), user: {username, userIcon: user[0].userIcon}}]);
 });
 
-router.get("/", authenticated, async (req, res) => {
-	const data = res.locals.data;
-	const user = getUsers().filter(cur => cur.username === data.username)[0];
-
-	res.send({...user, userIcon: undefined, password: undefined}); //TODO: remove userIcon: undefined
-});
-
 router.post("/addBoard", authenticated, isOwner, async (req, res) => {
+	if (!validate.addBoard(req.body)) return res.sendStatus(400);
 	const {boardId, username} = req.body;
-	if (!boardId || !username) return res.sendStatus(400);
 
 	const board = getBoards().filter(cur => cur.id === boardId)[0];
 
@@ -65,8 +69,8 @@ router.post("/addBoard", authenticated, isOwner, async (req, res) => {
 });
 
 router.post("/deleteBoard", authenticated, isOwner, async (req, res) => {
+	if (!validate.deleteBoard(req.body)) return res.sendStatus(400);
 	const {username, boardId} = req.body;
-	if (!boardId || !username) return res.sendStatus(400);
 
 	setUsers(getUsers().map(cur => cur.username === username ? {...cur, boards: cur.boards.filter(cur => cur.id !== boardId)} : cur));
 	setCards(getCards().map(cur => cur.id === boardId ? {
@@ -78,8 +82,8 @@ router.post("/deleteBoard", authenticated, isOwner, async (req, res) => {
 });
 
 router.post("/role", authenticated, isOwner, async (req, res) => {
+	if (!validate.changeRole(req.body)) return res.sendStatus(400);
 	const {username, isOwner, boardId} = req.body;
-	if (!boardId || !isOwner || !username) return res.sendStatus(400);
 
 	setUsers(getUsers().map(cur => cur.username === username ? {...cur, boards: cur.boards.map(cur => cur.id === boardId ? {...cur, isOwner} : cur)} : cur));
 
@@ -102,9 +106,9 @@ router.post("/leave", authenticated, async (req, res) => {
 });
 
 router.put("/", authenticated, async (req, res) => {
+	if (!validate.changeBoards(req.body)) return res.sendStatus(400);
 	const data = res.locals.data;
 	const boards = req.body.boards;
-	if (!boards) return res.sendStatus(400);
 
 	setUsers(getUsers().map(cur => cur.username === data.username ? {...cur, boards} : cur));
 

@@ -1,5 +1,7 @@
 const {authenticated, hasAccess, isOwner} = require("../services/authentication");
 const {getBoards, setBoards, setCards, getCards, setUsers, getUsers} = require("./tempStorage");
+const validateBody = require("./schemas/validateBody");
+const validate = require("./schemas/board");
 const express = require("express");
 
 const router = express.Router();
@@ -8,7 +10,6 @@ router.use(authenticated);
 
 router.get("/:boardId", hasAccess, async (req, res) => {
 	const {boardId} = req.params;
-	if (!boardId) return res.sendStatus(400);
 
 	const board = getBoards().filter(cur => cur.id === boardId);
 	if (board.length !== 1) return res.sendStatus(404);
@@ -16,10 +17,9 @@ router.get("/:boardId", hasAccess, async (req, res) => {
 	res.send(board[0]);
 });
 
-router.post("/", async (req, res) => {
-	const data = res.locals.data;
+router.post("/", validateBody(validate.createBoard), async (req, res) => {
 	const {board} = req.body;
-	if (!board) return res.sendStatus(400);
+	const data = res.locals.data;
 
 	const boards = getBoards();
 	if (boards.filter(cur => cur.id === board.id).length === 1) return res.sendStatus(400);
@@ -34,10 +34,8 @@ router.post("/", async (req, res) => {
 	res.sendStatus(200);
 });
 
-router.put("/:boardId", isOwner, async (req, res) => {
-	const {board} = req.body;
-	const {boardId} = req.params;
-	if (!boardId || !board) return res.sendStatus(400);
+router.put("/", isOwner, validateBody(validate.changeBoard), async (req, res) => {
+	const {board, boardId} = req.body;
 
 	setBoards(getBoards().map(cur => cur.id === boardId ? board : cur));
 
@@ -46,7 +44,6 @@ router.put("/:boardId", isOwner, async (req, res) => {
 
 router.delete("/:boardId", isOwner, async (req, res) => {
 	const {boardId} = req.params;
-	if (!boardId) return res.sendStatus(400);
 
 	const newBoards = getBoards().filter(cur => cur.id !== boardId);
 	if (newBoards.length === getBoards().length) res.sendStatus(404);

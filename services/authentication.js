@@ -1,5 +1,5 @@
 const {verifyJwt} = require("../services/jwt");
-const {getBoards} = require("../api/tempStorage");
+const {getBoards, getUsers} = require("../api/tempStorage");
 
 const verify = async token => {
 	if (!token || !token.startsWith("Bearer ")) return ["Error"];
