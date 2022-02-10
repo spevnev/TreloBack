@@ -2,6 +2,7 @@ const {hash, verify} = require("../services/hash");
 const {createJwt} = require("../services/jwt");
 const {getUsers, setUsers, getBoards, setBoards, setCards, getCards} = require("./tempStorage");
 const {isOwner, authenticated} = require("../services/authentication");
+const validateBody = require("./schemas/validateBody");
 const validate = require("./schemas/user");
 const express = require("express");
 
@@ -25,8 +26,7 @@ router.get("/", authenticated, async (req, res) => {
 	res.send({...user, userIcon: undefined, password: undefined}); //TODO: remove userIcon: undefined
 });
 
-router.post("/signup", async (req, res) => {
-	if (!validate.signup(req.body)) return res.sendStatus(400);
+router.post("/signup", validateBody(validate.signup), async (req, res) => {
 	const {username, password, userIcon} = req.body;
 
 	if (getUsers().filter(cur => cur.username === username).length !== 0) return res.send(["This username is already taken!"]);
@@ -37,8 +37,7 @@ router.post("/signup", async (req, res) => {
 	res.send([null, {token: await createJwt({username}), user}]);
 });
 
-router.post("/login", async (req, res) => {
-	if (!validate.login(req.body)) return res.sendStatus(400);
+router.post("/login", validateBody(validate.login), async (req, res) => {
 	const {username, password} = req.body;
 
 	if (getUsers().filter(cur => cur.username === username).length === 0) return res.sendStatus(400);
@@ -51,8 +50,7 @@ router.post("/login", async (req, res) => {
 	res.send([null, {token: await createJwt({username}), user: {username, userIcon: user[0].userIcon}}]);
 });
 
-router.post("/addBoard", authenticated, isOwner, async (req, res) => {
-	if (!validate.addBoard(req.body)) return res.sendStatus(400);
+router.post("/addBoard", validateBody(validate.addBoard), authenticated, isOwner, async (req, res) => {
 	const {boardId, username} = req.body;
 
 	const board = getBoards().filter(cur => cur.id === boardId)[0];
@@ -68,8 +66,7 @@ router.post("/addBoard", authenticated, isOwner, async (req, res) => {
 	res.send([null, {...user[0], password: undefined}]);
 });
 
-router.post("/deleteBoard", authenticated, isOwner, async (req, res) => {
-	if (!validate.deleteBoard(req.body)) return res.sendStatus(400);
+router.post("/deleteBoard", validateBody(validate.deleteBoard), authenticated, isOwner, async (req, res) => {
 	const {username, boardId} = req.body;
 
 	setUsers(getUsers().map(cur => cur.username === username ? {...cur, boards: cur.boards.filter(cur => cur.id !== boardId)} : cur));
@@ -81,8 +78,7 @@ router.post("/deleteBoard", authenticated, isOwner, async (req, res) => {
 	res.sendStatus(200);
 });
 
-router.post("/role", authenticated, isOwner, async (req, res) => {
-	if (!validate.changeRole(req.body)) return res.sendStatus(400);
+router.post("/role", validateBody(validate.changeRole), authenticated, isOwner, async (req, res) => {
 	const {username, isOwner, boardId} = req.body;
 
 	setUsers(getUsers().map(cur => cur.username === username ? {...cur, boards: cur.boards.map(cur => cur.id === boardId ? {...cur, isOwner} : cur)} : cur));
@@ -105,8 +101,7 @@ router.post("/leave", authenticated, async (req, res) => {
 	res.sendStatus(200);
 });
 
-router.put("/", authenticated, async (req, res) => {
-	if (!validate.changeBoards(req.body)) return res.sendStatus(400);
+router.put("/", validateBody(validate.changeBoards), authenticated, async (req, res) => {
 	const data = res.locals.data;
 	const boards = req.body.boards;
 
