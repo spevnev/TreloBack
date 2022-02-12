@@ -49,6 +49,7 @@ router.delete("/:boardId", isOwner, async (req, res) => {
 	if (newBoards.length === getBoards().length) res.sendStatus(404);
 
 	setBoards(newBoards);
+	setUsers(getUsers().map(cur => ({...cur, boards: cur.boards.filter(cur => cur.id !== boardId)})));
 
 	res.sendStatus(200);
 });

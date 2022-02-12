@@ -7,14 +7,10 @@ module.exports = new (require("ajv"))().compile({
 			type: "string",
 			minLength: 1,
 		},
-		cardId: {
-			type: "string",
-			minLength: 1,
-		},
 		card: type,
 	},
 	definitions: def,
-	required: ["boardId", "cardId", "card"],
+	required: ["boardId", "card"],
 	additionalProperties: false,
 	type: "object",
 });
