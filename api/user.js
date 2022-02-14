@@ -5,36 +5,36 @@ const {isOwner, authenticated} = require("../services/authentication");
 const validateBody = require("./schemas/validateBody");
 const validate = require("./schemas/user");
 const express = require("express");
+const fs = require("fs");
+const path = require("path");
+const {randomUUID} = require("crypto");
 
 const router = express.Router();
-
-
-//TODO:  TEMP
-hash("test").then(test => {
-	hash("temp").then(password => setUsers([{username: "test", password: test, boards: [{id: "1", title: "poh", isOwner: true, isFavourite: false}]}, {
-		username: "temp",
-		password,
-		boards: [],
-	}]));
-});
 
 
 router.get("/", authenticated, async (req, res) => {
 	const data = res.locals.data;
 	const user = getUsers().filter(cur => cur.username === data.username)[0];
 
-	res.send({...user, userIcon: undefined, password: undefined}); //TODO: remove userIcon: undefined
+	res.send({...user, password: undefined});
 });
 
 router.post("/signup", validateBody(validate.signup), async (req, res) => {
-	const {username, password, userIcon} = req.body;
+	const {username, password, icon} = req.body;
 
 	if (getUsers().filter(cur => cur.username === username).length !== 0) return res.send(["This username is already taken!"]);
 
-	const user = {username, userIcon};
+	const id = randomUUID();
+	const fileDir = path.join(__dirname, "../public/icons");
+	await fs.promises.stat(fileDir).catch(async () => await fs.promises.mkdir(fileDir));
+	await fs.promises.writeFile(path.join(fileDir, `${id}.${icon.ext}`), icon.data.replace(/^data:image\/[a-z]+;base64,/, ""), "base64").catch(e => {
+		if (!res.headersSent) res.send([e]);
+	});
+
+	const user = {username, icon: {id, ext: icon.ext}};
 	setUsers([...getUsers(), {...user, password: await hash(password), boards: []}]);
 
-	res.send([null, {token: await createJwt({username}), user}]);
+	if (!res.headersSent) res.send([null, {token: await createJwt({username}), user}]);
 });
 
 router.post("/login", validateBody(validate.login), async (req, res) => {
@@ -47,7 +47,7 @@ router.post("/login", validateBody(validate.login), async (req, res) => {
 
 	if (!await verify(password, user[0].password)) return res.send(["Invalid username or password"]);
 
-	res.send([null, {token: await createJwt({username}), user: {username, userIcon: user[0].userIcon}}]);
+	res.send([null, {token: await createJwt({username}), user: {username, icon: user[0].icon}}]);
 });
 
 router.post("/addBoard", validateBody(validate.addBoard), authenticated, isOwner, async (req, res) => {
@@ -62,8 +62,8 @@ router.post("/addBoard", validateBody(validate.addBoard), authenticated, isOwner
 		return {...cur, boards: [...cur.boards, {title: board.title, id: board.id, isFavourite: false, isOwner: false}]};
 	}));
 
-	if (user === null || user.length === 0) return res.send(["Invalid username!"]);
-	res.send([null, {...user[0], password: undefined}]);
+	if (user === null) return res.send(["Invalid username!"]);
+	res.send([null, {...user, password: undefined, boards: undefined}]);
 });
 
 router.post("/deleteBoard", validateBody(validate.deleteBoard), authenticated, isOwner, async (req, res) => {

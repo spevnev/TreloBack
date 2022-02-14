@@ -7,6 +7,7 @@ const verify = async token => {
 	return await verifyJwt(token.split("Bearer ")[1]);
 };
 
+// Authentication
 const authenticated = async (req, res, next) => {
 	const [error, data] = await verify(req.headers.authorization);
 	if (!data) return res.status(401).send(error);
@@ -16,6 +17,8 @@ const authenticated = async (req, res, next) => {
 	next();
 };
 
+
+// Authorization (has authority):
 const isOwner = async (req, res, next) => {
 	const data = res.locals.data;
 	const boardId = req.body.boardId || req.params.boardId;

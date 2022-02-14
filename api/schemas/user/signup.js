@@ -9,9 +9,20 @@ module.exports = new (require("ajv"))().compile({
 			type: "string",
 			minLength: 4,
 		},
-		userIcon: {
-			type: "string",
-			minLength: 1,
+		icon: {
+			type: "object",
+			properties: {
+				data: {
+					type: "string",
+					minLength: 1,
+				},
+				ext: {
+					type: "string",
+					minLength: 1,
+				},
+			},
+			required: ["data", "ext"],
+			additionalProperties: false,
 		},
 	},
 	required: ["username", "password"],

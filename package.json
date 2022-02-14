@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon"
+    "start": "nodemon",
+    "clear": "rm -r ./public/files/*"
   },
   "author": "",
   "license": "ISC",
