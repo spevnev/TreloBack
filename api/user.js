@@ -15,8 +15,9 @@ const router = express.Router();
 router.get("/", authenticated, async (req, res) => {
 	const data = res.locals.data;
 	const user = getUsers().filter(cur => cur.username === data.username)[0];
+	if (!user) return res.send(["Invalid token - user doesn't exist!"]);
 
-	res.send({...user, password: undefined});
+	res.send([null, {...user, password: undefined}]);
 });
 
 router.post("/signup", validateBody(validate.signup), async (req, res) => {

@@ -1,4 +1,4 @@
-const [type, def] = require("../user/icon");
+const [type, def] = require("./icon");
 
 module.exports = [
 	{$ref: "board"},

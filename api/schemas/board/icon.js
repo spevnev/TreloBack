@@ -10,7 +10,7 @@ module.exports = [
 				},
 				id: {
 					type: "string",
-					minLength: 1,
+					format: "uuid",
 				},
 			},
 			required: ["ext", "id"],

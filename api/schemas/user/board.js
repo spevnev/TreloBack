@@ -5,7 +5,7 @@ module.exports = [
 			$id: "userBoard",
 			properties: {
 				title: {type: "string", minLength: 1},
-				id: {type: "string", minLength: 1},
+				id: {type: "string", format: "uuid"},
 				isOwner: {type: "boolean"},
 				isFavourite: {type: "boolean"},
 			},

@@ -1,9 +1,12 @@
-module.exports = new (require("ajv"))().compile({
+const ajv = new (require("ajv"))();
+require("ajv-formats")(ajv, ["uuid"]);
+
+module.exports = ajv.compile({
 	$async: true,
 	properties: {
 		boardId: {
 			type: "string",
-			minLength: 1,
+			format: "uuid",
 		},
 		username: {
 			type: "string",

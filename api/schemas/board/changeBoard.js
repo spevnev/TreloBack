@@ -1,12 +1,14 @@
 const [type, def] = require("./board");
+const ajv = new (require("ajv"))();
+require("ajv-formats")(ajv, ["uuid"]);
 
-module.exports = new (require("ajv"))().compile({
+module.exports = ajv.compile({
 	$async: true,
 	properties: {
 		board: type,
 		boardId: {
 			type: "string",
-			minLength: 1,
+			format: "uuid",
 		},
 	},
 	definitions: def,
