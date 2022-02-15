@@ -4,10 +4,12 @@ module.exports = new (require("ajv"))().compile({
 		username: {
 			type: "string",
 			minLength: 4,
+			maxLength: 25,
 		},
 		password: {
 			type: "string",
 			minLength: 4,
+			maxLength: 64,
 		},
 		icon: {
 			type: "object",

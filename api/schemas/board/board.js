@@ -9,13 +9,30 @@ module.exports = [
 				title: {
 					type: "string",
 					minLength: 1,
+					maxLength: 20,
 				},
 				id: {
 					type: "string",
-					minLength: 1,
+					format: "uuid",
 				},
 				lists: {
 					type: "array",
+					items: {
+						properties: {
+							title: {
+								type: "string",
+								minLength: 1,
+								maxLength: 20,
+							},
+							id: {
+								type: "string",
+								format: "uuid",
+							},
+						},
+						required: ["title", "id"],
+						additionalProperties: false,
+						type: "object",
+					},
 				},
 				users: {
 					type: "array",
@@ -24,6 +41,7 @@ module.exports = [
 							username: {
 								type: "string",
 								minLength: 4,
+								maxLength: 25,
 							},
 							isOwner: {
 								type: "boolean",

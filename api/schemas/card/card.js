@@ -8,6 +8,7 @@ module.exports = [
 				title: {
 					type: "string",
 					minLength: 1,
+					maxLength: 64,
 				},
 				id: {
 					type: "string",
@@ -19,12 +20,14 @@ module.exports = [
 				},
 				description: {
 					type: "string",
+					maxLength: 500,
 				},
 				assigned: {
 					type: "array",
 					items: {
 						type: "string",
 						minLength: 4,
+						maxLength: 25,
 					},
 				},
 				files: {
@@ -33,6 +36,8 @@ module.exports = [
 						properties: {
 							filename: {
 								type: "string",
+								minLength: 1,
+								maxLength: 30,
 							},
 							id: {
 								type: "string",
@@ -43,6 +48,7 @@ module.exports = [
 						additionalProperties: false,
 						type: "object",
 					},
+					maxItems: 10,
 				},
 				images: {
 					type: "array",
@@ -60,6 +66,7 @@ module.exports = [
 						additionalProperties: false,
 						type: "object",
 					},
+					maxItems: 10,
 				},
 			},
 			required: ["title", "description", "assigned", "files", "images", "id", "listId"],

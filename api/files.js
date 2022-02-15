@@ -8,7 +8,6 @@ const router = express.Router();
 
 router.use(authenticated);
 
-
 const dir = path.join(__dirname, "../public/files/");
 
 const writeFile = async (res, fileDir, filename, data) => {

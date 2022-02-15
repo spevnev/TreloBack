@@ -5,8 +5,8 @@ const validate = require("./schemas/board");
 const express = require("express");
 
 const router = express.Router();
-router.use(authenticated);
 
+router.use(authenticated);
 
 router.get("/:boardId", hasAccess, async (req, res) => {
 	const {boardId} = req.params;

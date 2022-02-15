@@ -3,7 +3,6 @@ const {getBoards} = require("../api/tempStorage");
 
 const verify = async token => {
 	if (!token || !token.startsWith("Bearer ")) return ["Error"];
-
 	return await verifyJwt(token.split("Bearer ")[1]);
 };
 
@@ -22,11 +21,10 @@ const authenticated = async (req, res, next) => {
 const isOwner = async (req, res, next) => {
 	const data = res.locals.data;
 	const boardId = req.body.boardId || req.params.boardId;
-	if (!boardId) return res.sendStatus(404);
+	if (!boardId) return res.sendStatus(401);
 
 	const board = getBoards().filter(cur => cur.id === boardId);
-
-	if (board.length !== 1) return res.sendStatus(404);
+	if (board.length === 0) return res.sendStatus(404);
 	if (board[0].users.filter(cur => cur.username === data.username && cur.isOwner).length !== 1) return res.sendStatus(401);
 
 	next();
@@ -35,10 +33,9 @@ const isOwner = async (req, res, next) => {
 const hasAccess = async (req, res, next) => {
 	const data = res.locals.data;
 	const boardId = req.body.boardId || req.params.boardId;
-	if (!boardId) return res.sendStatus(404);
+	if (!boardId) return res.sendStatus(401);
 
 	const board = getBoards().filter(cur => cur.id === boardId);
-
 	if (board.length === 0) return res.sendStatus(404);
 	if (board[0].users.filter(cur => cur.username === data.username).length !== 1) return res.sendStatus(401);
 

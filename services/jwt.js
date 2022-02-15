@@ -10,7 +10,7 @@ const createJwt = data => new Promise((resolve, reject) => {
 	});
 });
 
-const verifyJwt = token => new Promise((resolve, reject) => {
+const verifyJwt = token => new Promise((resolve) => {
 	jwt.verify(token, JWT_KEY, {}, (err, res) => {
 		if (res) resolve([null, res]);
 		if (err) resolve([err]);

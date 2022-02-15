@@ -8,7 +8,6 @@ const router = express.Router();
 
 router.use(authenticated);
 
-
 router.get("/:boardId", hasAccess, (req, res) => {
 	const {boardId} = req.params;
 

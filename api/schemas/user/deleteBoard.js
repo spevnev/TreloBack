@@ -10,7 +10,8 @@ module.exports = ajv.compile({
 		},
 		username: {
 			type: "string",
-			minLength: 1,
+			minLength: 4,
+			maxLength: 25,
 		},
 	},
 	required: ["boardId", "username"],
