@@ -25,4 +25,13 @@ router.post("/leave", async (req, res) => {
 	res.sendStatus(200);
 });
 
+router.put("/favourite", async (req, res) => {
+	const {boardId, fav} = req.body;
+	if (!boardId || !fav) return res.sendStatus(400);
+
+	await userDB.toggleFavourite(boardId, res.locals.user.username, fav);
+
+	res.sendStatus(200);
+});
+
 module.exports = router;

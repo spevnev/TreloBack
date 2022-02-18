@@ -11,7 +11,6 @@ const getBoard = async id => {
         select array_agg(to_json(u)::jsonb - 'boardid') as users
         from board_users as u
         where u.boardid = $1::uuid
-        group by u.boardid
     )
 	select * from boards, u, l where boards.id = $1::uuid;`,
 		[id],

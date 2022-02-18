@@ -27,4 +27,12 @@ const getUser = async username => {
 	return {...r, boards: r.boards.filter(a => a).map(cur => ({isOwner: cur.isowner, isFavourite: cur.isfavourite, id: cur.boardid, title: cur.title}))};
 };
 
-module.exports = {addUser, getUser};
+const toggleFavourite = async (id, username, fav) => {
+	await client.query(`
+		update user_boards set isfavourite = $1::bool
+		where user_boards.username = $2 and user_boards.boardid = $3;`,
+		[fav, username, id],
+	).catch(e => e);
+};
+
+module.exports = {addUser, getUser, toggleFavourite};
