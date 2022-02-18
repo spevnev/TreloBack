@@ -27,22 +27,30 @@ router.get("/:type/:boardId/:id/", hasAccess, (req, res) => {
 });
 
 router.post("/files", hasAccess, async (req, res) => {
-	const {boardId} = req.body;
+	const {boardId, files} = req.body;
+	const ids = [];
 
-	const id = randomUUID();
-	await writeFile(res, path.join(dir, boardId, "files"), id, req.body.file.replace(/^data:[a-z]+\/[a-z]+;base64,/, ""));
+	files.forEach(file => {
+		const id = randomUUID();
+		ids.push(id);
+		writeFile(res, path.join(dir, boardId, "files"), id, file.replace(/^data:[a-z]+\/[a-z]+;base64,/, ""));
+	});
 
-	if (!res.headersSent) res.send([null, id]);
+	if (!res.headersSent) res.send([null, ids]);
 });
 
 router.post("/images", hasAccess, async (req, res) => {
-	const {boardId} = req.body;
-	if (!req.body.image.match(/^data:image\/[a-z]+;base64,/)) return res.sendStatus(400);
+	const {boardId, images} = req.body;
+	const ids = [];
 
-	const id = randomUUID();
-	await writeFile(res, path.join(dir, boardId, "images"), `${id}.png`, req.body.image.replace(/^data:image\/[a-z]+;base64,/, ""));
+	images.forEach(image => {
+		if (!image.match(/^data:image\/[a-z]+;base64,/)) res.sendStatus(400);
+		const id = randomUUID();
+		ids.push(id);
+		writeFile(res, path.join(dir, boardId, "images"), `${id}.png`, image.replace(/^data:image\/[a-z]+;base64,/, ""));
+	});
 
-	if (!res.headersSent) res.send([null, id]);
+	if (!res.headersSent) res.send([null, ids]);
 });
 
 module.exports = router;

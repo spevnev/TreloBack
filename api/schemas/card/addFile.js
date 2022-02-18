@@ -12,16 +12,26 @@ module.exports = ajv.compile({
 			type: "string",
 			format: "uuid",
 		},
-		id: {
-			type: "string",
-			format: "uuid",
-		},
-		filename: {
-			type: "string",
-			minLength: 1,
+		files: {
+			type: "array",
+			items: {
+				properties: {
+					id: {
+						type: "string",
+						format: "uuid",
+					},
+					filename: {
+						type: "string",
+						minLength: 1,
+					},
+				},
+				required: ["filename", "id"],
+				additionalProperties: false,
+				type: "object",
+			},
 		},
 	},
-	required: ["boardId", "cardId", "id", "filename"],
+	required: ["boardId", "cardId", "files"],
 	additionalProperties: false,
 	type: "object",
 });

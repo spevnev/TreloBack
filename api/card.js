@@ -36,11 +36,10 @@ router.post("/deleteFile", hasAccess, async (req, res) => {
 	res.sendStatus(200);
 });
 
-router.post("/addFile", hasAccess, validateBody(validate.addFile), async (req, res) => {
-	const {filename, cardId, id} = req.body;
+router.post("/addFiles", hasAccess, validateBody(validate.addFile), (req, res) => {
+	const {files, cardId} = req.body;
 
-	const success = await cardDB.addFile(cardId, id, filename);
-	if (!success) return res.sendStatus(400);
+	for (let i = 0; i < files.length; i++) cardDB.addFile(cardId, files[i].id, files[i].filename);
 
 	res.sendStatus(200);
 });
