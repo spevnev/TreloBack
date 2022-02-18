@@ -12,22 +12,11 @@ module.exports = new (require("ajv"))().compile({
 			maxLength: 64,
 		},
 		icon: {
-			type: "object",
-			properties: {
-				data: {
-					type: "string",
-					minLength: 1,
-				},
-				ext: {
-					type: "string",
-					minLength: 1,
-				},
-			},
-			required: ["data", "ext"],
-			additionalProperties: false,
+			type: "string",
+			minLength: 1,
 		},
 	},
-	required: ["username", "password"],
+	required: ["username", "password", "icon"],
 	additionalProperties: false,
 	type: "object",
 });

@@ -8,13 +8,20 @@ module.exports = ajv.compile({
 			type: "string",
 			format: "uuid",
 		},
-		username: {
+		cardId: {
 			type: "string",
-			minLength: 4,
-			maxLength: 25,
+			format: "uuid",
+		},
+		id: {
+			type: "string",
+			format: "uuid",
+		},
+		filename: {
+			type: "string",
+			minLength: 1,
 		},
 	},
-	required: ["boardId", "username"],
+	required: ["boardId", "cardId", "id", "filename"],
 	additionalProperties: false,
 	type: "object",
 });

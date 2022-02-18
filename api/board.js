@@ -1,43 +1,62 @@
 const {authenticated, hasAccess, isOwner} = require("../services/authentication");
-const {getBoards, setBoards, setCards, getCards, setUsers, getUsers} = require("./tempStorage");
 const validateBody = require("./schemas/validateBody");
 const validate = require("./schemas/board");
+const boardDB = require("../db/board");
 const express = require("express");
 
 const router = express.Router();
 
 router.use(authenticated);
 
-router.get("/:boardId", hasAccess, async (req, res) => {
-	const {boardId} = req.params;
-
-	const board = getBoards().filter(cur => cur.id === boardId);
-	if (board.length !== 1) return res.sendStatus(404);
-
-	res.send(board[0]);
-});
+router.get("/:boardId", hasAccess, (req, res) => res.send(res.locals.board));
 
 router.post("/", validateBody(validate.createBoard), async (req, res) => {
-	const {board} = req.body;
-	const data = res.locals.data;
+	const {title, boardId} = req.body;
 
-	const boards = getBoards();
-	if (boards.filter(cur => cur.id === board.id).length === 1) return res.sendStatus(400);
-
-	setBoards([...boards, board]);
-	setCards([...getCards(), {id: board.id, cards: []}]);
-	setUsers(getUsers().map(cur => cur.username === data.username ? {
-		...cur,
-		boards: [...cur.boards, {id: board.id, isFavourite: false, isOwner: true, title: board.title}],
-	} : cur));
+	const success = await boardDB.addBoard(title, boardId, res.locals.user.username);
+	if (!success) return res.sendStatus(400);
 
 	res.sendStatus(200);
 });
 
-router.put("/", isOwner, validateBody(validate.changeBoard), async (req, res) => {
-	const {board, boardId} = req.body;
+router.post("/user", validateBody(validate.addUser), isOwner, async (req, res) => {
+	const {username} = req.body;
 
-	setBoards(getBoards().map(cur => cur.id === boardId ? board : cur));
+	res.send(await boardDB.addUser(res.locals.board, username));
+});
+
+router.post("/list", validateBody(validate.addList), isOwner, async (req, res) => {
+	const {boardId, id, title} = req.body;
+
+	const success = await boardDB.addList(boardId, id, title);
+	if (!success) return res.sendStatus(400);
+
+	res.sendStatus(200);
+});
+
+router.put("/list", validateBody(validate.changeList), isOwner, async (req, res) => {
+	const {id, title} = req.body;
+
+	const success = await boardDB.changeList(id, title);
+	if (!success) return res.sendStatus(400);
+
+	res.sendStatus(200);
+});
+
+router.put("/user", validateBody(validate.changeRole), isOwner, async (req, res) => {
+	const {username, isOwner, boardId} = req.body;
+
+	const success = await boardDB.changeRole(boardId, username, isOwner);
+	if (!success) return res.sendStatus(400);
+
+	res.sendStatus(200);
+});
+
+router.put("/", validateBody(validate.changeTitle), isOwner, async (req, res) => {
+	const {title, boardId} = req.body;
+
+	const success = await boardDB.changeTitle(boardId, title);
+	if (!success) return res.sendStatus(400);
 
 	res.sendStatus(200);
 });
@@ -45,11 +64,26 @@ router.put("/", isOwner, validateBody(validate.changeBoard), async (req, res) =>
 router.delete("/:boardId", isOwner, async (req, res) => {
 	const {boardId} = req.params;
 
-	const newBoards = getBoards().filter(cur => cur.id !== boardId);
-	if (newBoards.length === getBoards().length) res.sendStatus(404);
+	const success = await boardDB.deleteBoard(boardId);
+	if (!success) return res.sendStatus(400);
 
-	setBoards(newBoards);
-	setUsers(getUsers().map(cur => ({...cur, boards: cur.boards.filter(cur => cur.id !== boardId)})));
+	res.sendStatus(200);
+});
+
+router.delete("/list/:boardId/:id", isOwner, async (req, res) => {
+	const {id} = req.params;
+
+	const success = await boardDB.deleteList(id);
+	if (!success) return res.sendStatus(400);
+
+	res.sendStatus(200);
+});
+
+router.delete("/user/:boardId/:username", isOwner, async (req, res) => {
+	const {username, boardId} = req.params;
+
+	const success = await boardDB.deleteUser(boardId, username);
+	if (!success) return res.sendStatus(400);
 
 	res.sendStatus(200);
 });

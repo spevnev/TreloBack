@@ -53,18 +53,8 @@ module.exports = [
 				images: {
 					type: "array",
 					items: {
-						properties: {
-							ext: {
-								type: "string",
-							},
-							id: {
-								type: "string",
-								format: "uuid",
-							},
-						},
-						required: ["ext", "id"],
-						additionalProperties: false,
-						type: "object",
+						type: "string",
+						format: "uuid",
 					},
 					maxItems: 10,
 				},

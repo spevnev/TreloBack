@@ -1,5 +1,5 @@
 const {authenticated, hasAccess} = require("../services/authentication");
-const {getCards, setCards, setBoards, getBoards} = require("./tempStorage");
+const cardDB = require("../db/card");
 const validateBody = require("./schemas/validateBody");
 const validate = require("./schemas/card");
 const express = require("express");
@@ -8,35 +8,66 @@ const router = express.Router();
 
 router.use(authenticated);
 
-router.get("/:boardId", hasAccess, (req, res) => {
+router.get("/:boardId", hasAccess, async (req, res) => {
 	const {boardId} = req.params;
 
-	const boardCards = getCards().filter(cur => cur.id === boardId);
-	if (boardCards.length !== 1) res.sendStatus(404);
+	const cards = await cardDB.getCards(boardId);
+	if (cards === null) return res.sendStatus(400);
 
-	res.send(boardCards[0]);
+	res.send({id: boardId, cards});
 });
 
-router.post("/", hasAccess, validateBody(validate.changeCard), (req, res) => {
+router.post("/", hasAccess, validateBody(validate.changeCard), async (req, res) => {
 	const {boardId, card} = req.body;
 
-	setCards(getCards().map(cur => cur.id === boardId ? {...cur, cards: [...cur.cards, card]} : cur));
+	const success = await cardDB.addCard(boardId, card);
+	if (!success) return res.sendStatus(400);
 
 	res.sendStatus(200);
 });
 
-router.delete("/:boardId/:id", hasAccess, (req, res) => {
-	const {boardId, id} = req.params;
+router.post("/deleteFile", hasAccess, async (req, res) => {
+	const {id} = req.body;
+	if (!id) return res.sendStatus(400);
 
-	setCards(getCards().map(cur => cur.id === boardId ? {...cur, cards: cur.cards.filter(cur => cur.id !== id)} : cur));
+	const success = await cardDB.deleteFile(id);
+	if (!success) return res.sendStatus(400);
 
 	res.sendStatus(200);
 });
 
-router.put("/", hasAccess, validateBody(validate.changeCard), (req, res) => {
-	const {card, boardId} = req.body;
+router.post("/addFile", hasAccess, validateBody(validate.addFile), async (req, res) => {
+	const {filename, cardId, id} = req.body;
 
-	setCards(getCards().map(cur => cur.id === boardId ? {...cur, cards: cur.cards.map(cur => cur.id === card.id ? card : cur)} : cur));
+	const success = await cardDB.addFile(cardId, id, filename);
+	if (!success) return res.sendStatus(400);
+
+	res.sendStatus(200);
+});
+
+router.put("/", hasAccess, validateBody(validate.changeCard), async (req, res) => {
+	const {card} = req.body;
+
+	const success = await cardDB.changeCard(card.title, card.description, card.listId, card.images, card.assigned, card.id);
+	if (!success) return res.sendStatus(400);
+
+	res.sendStatus(200);
+});
+
+router.put("/renameFile", hasAccess, validateBody(validate.renameFile), async (req, res) => {
+	const {filename, id} = req.body;
+
+	const success = await cardDB.renameFile(id, filename);
+	if (!success) return res.sendStatus(400);
+
+	res.sendStatus(200);
+});
+
+router.delete("/:boardId/:id", hasAccess, async (req, res) => {
+	const {id} = req.params;
+
+	const success = await cardDB.deleteCard(id);
+	if (!success) return res.sendStatus(400);
 
 	res.sendStatus(200);
 });
