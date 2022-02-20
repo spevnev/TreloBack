@@ -23,97 +23,140 @@ const getBoard = async id => {
 };
 
 const addBoard = async (title, id, username) => {
-	return await Promise.all([
-		client.query(`insert into boards(title, id) VALUES ($1, $2);`, [title, id]),
-		client.query(`
+	try {
+		await client.query("begin;");
+		await client.query(`insert into boards(title, id) values ($1, $2);`, [title, id]);
+		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Backlog', uuid_generate_v4())`, [id]);
+		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Progress', uuid_generate_v4())`, [id]);
+		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Done', uuid_generate_v4())`, [id]);
+		await client.query(`
 			insert into board_users(boardId, username, isOwner, icon) 
 			values ($1::uuid, $2::varchar, true, (select icon from users where users.username = $2::varchar))`,
 			[id, username],
-		),
-		client.query(`
+		);
+		await client.query(`
 			insert into user_boards(username, title, isfavourite, isowner, boardid)
 			values ($1, $2, false, true, $3)`,
 			[username, title, id],
-		),
-	]).catch(e => null);
+		);
+		await client.query("commit;");
+		return true;
+	} catch (e) {
+		console.log(e);
+		await client.query("rollback;");
+		return false;
+	}
 };
 
 const changeTitle = async (boardId, title) => {
-	return await Promise.all([
-		client.query(`
+	try {
+		await client.query("begin;");
+		await client.query(`
 			update boards set title = $1 where boards.id = $2::uuid;`,
 			[title, boardId],
-		),
-		client.query(`
+		);
+		await client.query(`
 			update user_boards
 			set title = $1
   			where user_boards.boardid = $2::uuid;`,
 			[title, boardId],
-		),
-	]).catch(e => null);
+		);
+		await client.query("commit;");
+
+		return true;
+	} catch (e) {
+		await client.query("rollback;");
+		return false;
+	}
 };
 
 const deleteBoard = async id => {
-	return await Promise.all([
-		client.query("delete from card_files where card_files.cardid in (select cardid from cards where boardid = $1::uuid);", [id]),
-		client.query("delete from cards where cards.boardid = $1::uuid;", [id]),
-		client.query("delete from boards where boards.id = $1::uuid;", [id]),
-		client.query("delete from board_users where board_users.boardid = $1::uuid;", [id]),
-		client.query("delete from board_lists where board_lists.boardid = $1::uuid;", [id]),
-		client.query("delete from user_boards where user_boards.boardid = $1::uuid;", [id]),
-	]).catch(e => null);
+	try {
+		await client.query("begin;");
+		await client.query("delete from card_files where card_files.cardid in (select cardid from cards where boardid = $1::uuid);", [id]);
+		await client.query("delete from cards where cards.boardid = $1::uuid;", [id]);
+		await client.query("delete from boards where boards.id = $1::uuid;", [id]);
+		await client.query("delete from board_users where board_users.boardid = $1::uuid;", [id]);
+		await client.query("delete from board_lists where board_lists.boardid = $1::uuid;", [id]);
+		await client.query("delete from user_boards where user_boards.boardid = $1::uuid;", [id]);
+		await client.query("commit;");
+
+		return true;
+	} catch (e) {
+		await client.query("rollback;");
+		return false;
+	}
 };
 
 const addUser = async (board, username) => {
-	const user = await client.query(`
-			select * from users where username = $1`,
-		[username],
-	).catch(e => e);
-	if (!user || user.rows.length !== 1) return ["User doesn't exist"];
+	try {
+		await client.query("begin;");
+		const user = await client.query("select * from users where username = $1", [username]);
+		if (!user || user.rows.length !== 1) {
+			await client.query("commit;");
+			return ["User doesn't exist"];
+		}
 
-	await Promise.all([
-		client.query(`
+		await client.query(`
 			insert into board_users(boardId, username, isOwner, icon) 
 			values ($1::uuid, $2::varchar, false, (select icon from users where users.username = $2::varchar))`,
 			[board.id, username],
-		),
-		client.query(`
+		);
+		await client.query(`
 			insert into user_boards(username, title, isfavourite, isowner, boardid)
 			values ($1, $2, false, false, $3)`,
 			[username, board.title, board.id],
-		),
-	]).catch(e => e);
+		);
+		await client.query("commit;");
 
-	return [null, {...user.rows[0], password: undefined}];
+		return [null, {...user.rows[0], password: undefined}];
+	} catch (e) {
+		await client.query("rollback;");
+		return ["Error"];
+	}
 };
 
 const deleteUser = async (boardId, username) => {
-	return await Promise.all([
-		client.query(
+	try {
+		await client.query("begin;");
+		await client.query(
 			"delete from board_users where boardid = $1 and username = $2;",
 			[boardId, username],
-		),
-		client.query(
+		);
+		await client.query(
 			"delete from user_boards where boardid = $1 and username = $2;",
 			[boardId, username],
-		),
-	]).catch(e => null);
+		);
+		await client.query("commit;");
+
+		return true;
+	} catch (e) {
+		await client.query("rollback;");
+		return false;
+	}
 };
 
 const changeRole = async (boardId, username, isOwner) => {
-	return await Promise.all([
-		client.query(`
+	try {
+		await client.query("begin;");
+		await client.query(`
 			update board_users set isowner = $1::bool
 			where board_users.boardid = $2::uuid 
 			and board_users.username = $3;`,
 			[isOwner, boardId, username],
-		),
-		client.query(`
+		);
+		await client.query(`
 			update user_boards set isowner = $1::bool
 			where user_boards.username = $2 and user_boards.boardid = $3::uuid;`,
 			[isOwner, username, boardId],
-		),
-	]).catch(e => null);
+		);
+		await client.query("commit;");
+
+		return true;
+	} catch (e) {
+		await client.query("rollback;");
+		return false;
+	}
 };
 
 const addList = async (boardId, id, title) => {
@@ -129,17 +172,24 @@ const changeList = async (id, title) => {
 	const res = await client.query(
 		`update board_lists set title = $1 where board_lists.id = $2::uuid;`,
 		[title, id],
-	).catch(e => e);
+	).catch(e => null);
 
 	return res ? res.rows : null;
 };
 
 const deleteList = async id => {
-	return await Promise.all([
-		client.query("delete from board_lists where id = $1::uuid;", [id]),
-		client.query("delete from card_files where cardid in (select id from cards where listid = $1::uuid)", [id]),
-		client.query("delete from cards where listid = $1::uuid", [id]),
-	]).catch(e => null);
+	try {
+		await client.query("begin;");
+		await client.query("delete from board_lists where id = $1::uuid;", [id]);
+		await client.query("delete from card_files where cardid in (select id from cards where listid = $1::uuid)", [id]);
+		await client.query("delete from cards where listid = $1::uuid", [id]);
+		await client.query("commit;");
+
+		return true;
+	} catch (e) {
+		await client.query("rollback;");
+		return false;
+	}
 };
 
 module.exports = {getBoard, addBoard, addUser, changeTitle, deleteBoard, deleteUser, changeRole, addList, changeList, deleteList};
