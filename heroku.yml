@@ -1,6 +1,6 @@
 build:
   docker:
-    worker: Dockerfile
+    web: Dockerfile
 
 run:
-  worker: node app
+  web: node app
