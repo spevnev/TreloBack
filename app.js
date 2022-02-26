@@ -20,3 +20,7 @@ dbClient.query("select now()", err => {
 });
 
 app.listen(3000, () => console.log("Server is running!"));
+
+console.log(process.env.TEST_VAR);
+console.log(process.env.TEST_VAR1);
+console.log(process.env.TEST_VAR2);
