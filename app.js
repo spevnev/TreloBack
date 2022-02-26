@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const api = require("./api");
+const dbClient = require("./db");
 
 const app = express();
 
@@ -13,4 +14,9 @@ app.use((error, req, res, next) => {
 	next();
 });
 
-app.listen(3000, () => console.log("Server is running!"));
+dbClient.query("select now()", err => {
+	if (err) throw new Error(err);
+	else console.log("DB is connected!");
+});
+
+app.listen(process.env.SERVER_PORT || 3001, () => console.log("Server is running!"));
