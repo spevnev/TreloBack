@@ -1,6 +1,6 @@
 FROM node:17.5-alpine
 
-ENV DB_HOST="localhost"
+ENV DB_HOST="host.docker.internal"
 ENV DB_PORT=5432
 ENV DB_NAME="trelo"
 ENV DB_USER="root"
