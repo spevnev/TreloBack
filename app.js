@@ -19,4 +19,4 @@ dbClient.query("select now()", err => {
 	else console.log("DB is connected!");
 });
 
-app.listen(process.env.SERVER_PORT || 3001, () => console.log("Server is running!"));
+app.listen(3000, () => console.log("Server is running!"));
