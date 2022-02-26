@@ -14,13 +14,9 @@ app.use((error, req, res, next) => {
 	next();
 });
 
-app.get("/", (req, res) => {
-	res.send("works!");
-});
-
 dbClient.query("select now()", err => {
 	if (err) throw new Error(err);
 	else console.log("DB is connected!");
 });
 
-app.listen(process.env.PORT || 3000, () => console.log("Server is running!"));
+app.listen(3000, () => console.log("Server is running!"));
