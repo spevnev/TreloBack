@@ -14,6 +14,10 @@ app.use((error, req, res, next) => {
 	next();
 });
 
+app.get("/", (req, res) => {
+	res.send("works!");
+});
+
 dbClient.query("select now()", err => {
 	if (err) throw new Error(err);
 	else console.log("DB is connected!");
