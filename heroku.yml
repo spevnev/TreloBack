@@ -2,5 +2,4 @@ build:
   docker:
     web: Dockerfile
   config:
-    TEST_VAR: 123
-    TEST_VAR1: asd
+    TEST_VAR: 321
