@@ -1,4 +1,5 @@
 const client = require("./index");
+const {randomUUID} = require("crypto");
 
 const getBoard = async id => {
 	const res = await client.query(`
@@ -26,9 +27,9 @@ const addBoard = async (title, id, username) => {
 	try {
 		await client.query("begin;");
 		await client.query(`insert into boards(title, id) values ($1, $2);`, [title, id]);
-		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Backlog', uuid_generate_v4())`, [id]);
-		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Progress', uuid_generate_v4())`, [id]);
-		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Done', uuid_generate_v4())`, [id]);
+		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Backlog', $2)`, [id, randomUUID()]);
+		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Progress', $2)`, [id, randomUUID()]);
+		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Done', $2)`, [id, randomUUID()]);
 		await client.query(`
 			insert into board_users(boardId, username, isOwner, icon) 
 			values ($1::uuid, $2::varchar, true, (select icon from users where users.username = $2::varchar))`,
