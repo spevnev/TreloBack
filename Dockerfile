@@ -1,4 +1,4 @@
-FROM node:17.5-alpine
+FROM node:17-alpine
 
 ENV DB_HOST="host.docker.internal"
 ENV DB_PORT=5432
