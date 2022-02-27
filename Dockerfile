@@ -13,8 +13,7 @@ EXPOSE $PORT
 RUN mkdir app
 WORKDIR app
 
-RUN mkdir -p public && \
-    mkdir -p public/files && \
+RUN mkdir -p public/files && \
     mkdir -p public/icons
 
 COPY package.json package.json
