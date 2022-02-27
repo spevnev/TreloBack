@@ -9,7 +9,4 @@ const client = new Pool({
 	},
 });
 
-console.log(process.env);
-console.log(process.env.DATABASE_URL);
-
 module.exports = client;
