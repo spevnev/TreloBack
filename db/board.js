@@ -42,7 +42,6 @@ const addBoard = async (title, id, username) => {
 		await client.query("commit;");
 		return true;
 	} catch (e) {
-		console.log(e);
 		await client.query("rollback;");
 		return false;
 	}
