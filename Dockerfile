@@ -7,6 +7,7 @@ RUN mkdir -p public/files && \
     mkdir -p public/icons
 
 ENV DATABASE_URL="postgresql://root:root@host.docker.internal/trelo"
+ENV PRODUCTION=false
 ENV PORT=3000
 EXPOSE 3000
 
