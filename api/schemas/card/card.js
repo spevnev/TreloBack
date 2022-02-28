@@ -54,7 +54,6 @@ module.exports = [
 					type: "array",
 					items: {
 						type: "string",
-						format: "uuid",
 					},
 					maxItems: 10,
 				},
