@@ -1,30 +1,29 @@
 const userDB = require("../db/user");
-const express = require("express");
 const validateBody = require("./schemas/validateBody");
 const validate = require("./schemas/auth");
 const {randomUUID} = require("crypto");
-const path = require("path");
-const fs = require("fs");
+const upload = require("../services/upload");
 const {hash, verify} = require("../services/hash");
 const {createJwt} = require("../services/jwt");
+const express = require("express");
 
 const router = express.Router();
+
+
+router.post("/icon", async (req, res) => {
+	const {icon} = req.body;
+	if (!icon) return res.sendStatus(400);
+
+	res.send((await upload(icon, `icons/${randomUUID()}`).catch(e => e)).secure_url);
+});
 
 router.post("/signup", validateBody(validate.signup), async (req, res) => {
 	const {username, password, icon} = req.body;
 
-	const id = randomUUID();
-	const fileDir = path.join(__dirname, "../public/icons");
-	await fs.promises.stat(fileDir).catch(async () => await fs.promises.mkdir(fileDir));
-	await fs.promises.writeFile(path.join(fileDir, `${id}.png`), icon.replace(/^data:image\/[a-z]+;base64,/, ""), "base64").catch(e => {
-		if (!res.headersSent) res.send([e]);
-	});
-
-	const user = {username, icon: id};
-	const error = await userDB.addUser({...user, password: await hash(password)});
+	const error = await userDB.addUser({username, icon, password: await hash(password)});
 	if (error) return res.send([error]);
 
-	if (!res.headersSent) res.send([null, {token: await createJwt({username}), user}]);
+	if (!res.headersSent) res.send([null, {token: await createJwt({username}), user: {username, icon}}]);
 });
 
 router.post("/login", validateBody(validate.login), async (req, res) => {

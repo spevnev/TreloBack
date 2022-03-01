@@ -27,10 +27,10 @@ router.post("/", hasAccess, validateBody(validate.changeCard), async (req, res) 
 });
 
 router.post("/deleteFile", hasAccess, async (req, res) => {
-	const {id} = req.body;
-	if (!id) return res.sendStatus(400);
+	const {url} = req.body;
+	if (!url) return res.sendStatus(400);
 
-	const success = await cardDB.deleteFile(id);
+	const success = await cardDB.deleteFile(url);
 	if (!success) return res.sendStatus(400);
 
 	res.sendStatus(200);
@@ -39,7 +39,7 @@ router.post("/deleteFile", hasAccess, async (req, res) => {
 router.post("/addFiles", hasAccess, validateBody(validate.addFile), (req, res) => {
 	const {files, cardId} = req.body;
 
-	for (let i = 0; i < files.length; i++) cardDB.addFile(cardId, files[i].id, files[i].filename);
+	for (let i = 0; i < files.length; i++) cardDB.addFile(cardId, files[i].url, files[i].filename);
 
 	res.sendStatus(200);
 });
@@ -54,9 +54,9 @@ router.put("/", hasAccess, validateBody(validate.changeCard), async (req, res) =
 });
 
 router.put("/renameFile", hasAccess, validateBody(validate.renameFile), async (req, res) => {
-	const {filename, id} = req.body;
+	const {filename, url} = req.body;
 
-	const success = await cardDB.renameFile(id, filename);
+	const success = await cardDB.renameFile(url, filename);
 	if (!success) return res.sendStatus(400);
 
 	res.sendStatus(200);

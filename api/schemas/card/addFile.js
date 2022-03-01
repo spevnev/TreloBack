@@ -16,16 +16,16 @@ module.exports = ajv.compile({
 			type: "array",
 			items: {
 				properties: {
-					id: {
+					url: {
 						type: "string",
-						format: "uuid",
 					},
 					filename: {
 						type: "string",
 						minLength: 1,
+						maxLength: 32,
 					},
 				},
-				required: ["filename", "id"],
+				required: ["filename", "url"],
 				additionalProperties: false,
 				type: "object",
 			},

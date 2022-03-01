@@ -39,12 +39,11 @@ module.exports = [
 								minLength: 1,
 								maxLength: 30,
 							},
-							id: {
+							url: {
 								type: "string",
-								format: "uuid",
 							},
 						},
-						required: ["filename", "id"],
+						required: ["filename", "url"],
 						additionalProperties: false,
 						type: "object",
 					},

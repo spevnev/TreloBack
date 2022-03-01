@@ -23,28 +23,28 @@ const addCard = async (boardId, {title, id, listId}) => {
 	return res ? res.rows : null;
 };
 
-const addFile = async (cardId, id, filename) => {
+const addFile = async (cardId, url, filename) => {
 	const res = await client.query(
-		"insert into card_files(cardid, id, filename) values ($1, $2, $3);",
-		[cardId, id, filename],
+		"insert into card_files(cardid, url, filename) values ($1, $2, $3);",
+		[cardId, url, filename],
 	).catch(e => e);
 
 	return res ? res.rows : null;
 };
 
-const renameFile = async (id, filename) => {
+const renameFile = async (url, filename) => {
 	const res = await client.query(
-		"update card_files set filename = $1 where id = $2",
-		[filename, id],
+		"update card_files set filename = $1 where url = $2",
+		[filename, url],
 	).catch(e => e);
 
 	return res ? res.rows : null;
 };
 
-const deleteFile = async id => {
+const deleteFile = async url => {
 	const res = await client.query(
-		"delete from card_files as f where f.id = $1;",
-		[id],
+		"delete from card_files where url = $1;",
+		[url],
 	).catch(e => e);
 
 	return res ? res.rows : null;

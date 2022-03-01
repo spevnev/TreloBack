@@ -12,9 +12,9 @@ const client = new Pool({
 		await client.query(`
 		create table if not exists users
 		(
-			username varchar(25) primary key,
-			password varchar(162)   not null,
-			icon     uuid unique    not null
+			username varchar(25)      primary key,
+			password varchar(162)        not null,
+			icon     varchar(256) unique not null
 		);`);
 		await client.query(`
 		create table if not exists user_boards
@@ -41,10 +41,10 @@ const client = new Pool({
 		await client.query(`
 		create table if not exists board_users
 		(
-			boardId  uuid        not null,
-			username varchar(25) not null,
-			isOwner  bool        not null,
-			icon     uuid        not null
+			boardId  uuid         not null,
+			username varchar(25)  not null,
+			isOwner  bool         not null,
+			icon     varchar(256) not null
 		);`);
 		await client.query(`
 		create table if not exists cards
@@ -60,9 +60,9 @@ const client = new Pool({
 		await client.query(`
 		create table if not exists card_files
 		(
-			cardId   uuid        not null,
-			id       uuid primary key,
-			filename varchar(30) not null
+			cardId   uuid           not null,
+			url     varchar(256) primary key,
+			filename varchar(32)     not null
 		);`);
 		await client.query("commit;");
 	} catch (e) {

@@ -7,7 +7,6 @@ const app = express();
 
 app.use(cors({origin: true}));
 app.use("/api/", api);
-app.use("/static/icons/", express.static("./public/icons"));
 
 app.use((error, req, res, next) => {
 	if (error.type === "entity.parse.failed") return res.status(400).send(error.message);
