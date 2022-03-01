@@ -27,7 +27,7 @@ router.post("/leave", async (req, res) => {
 
 router.put("/favourite", async (req, res) => {
 	const {boardId, fav} = req.body;
-	if (!boardId || !fav) return res.sendStatus(400);
+	if (!boardId || fav === undefined) return res.sendStatus(400);
 
 	await userDB.toggleFavourite(boardId, res.locals.user.username, fav);
 
