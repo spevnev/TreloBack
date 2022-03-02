@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.use(authenticated);
 
+
 router.get("/:boardId", hasAccess, async (req, res) => {
 	const {boardId} = req.params;
 
@@ -20,9 +21,7 @@ router.get("/:boardId", hasAccess, async (req, res) => {
 router.post("/", hasAccess, validateBody(validate.changeCard), async (req, res) => {
 	const {boardId, card} = req.body;
 
-	const success = await cardDB.addCard(boardId, card);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await cardDB.addCard(boardId, card))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
@@ -30,9 +29,7 @@ router.post("/deleteFile", hasAccess, async (req, res) => {
 	const {url} = req.body;
 	if (!url) return res.sendStatus(400);
 
-	const success = await cardDB.deleteFile(url);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await cardDB.deleteFile(url))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
@@ -47,28 +44,23 @@ router.post("/addFiles", hasAccess, validateBody(validate.addFile), (req, res) =
 router.put("/", hasAccess, validateBody(validate.changeCard), async (req, res) => {
 	const {card} = req.body;
 
-	const success = await cardDB.changeCard(card.title, card.description, card.listId, card.images, card.assigned, card.id);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await cardDB.changeCard(card.title, card.description, card.listId, card.images, card.assigned, card.id))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
 router.put("/renameFile", hasAccess, validateBody(validate.renameFile), async (req, res) => {
 	const {filename, url} = req.body;
 
-	const success = await cardDB.renameFile(url, filename);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await cardDB.renameFile(url, filename))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
 router.delete("/:boardId/:id", hasAccess, async (req, res) => {
 	const {id} = req.params;
 
-	const success = await cardDB.deleteCard(id);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await cardDB.deleteCard(id))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
+
 
 module.exports = router;

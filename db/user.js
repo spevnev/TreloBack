@@ -20,7 +20,7 @@ const getUser = async username => {
 		where u.username = $1
 		group by u.username;`,
 		[username],
-	).catch(e => e);
+	).catch(e => null);
 	if (!res || res.rows.length !== 1) return null;
 
 	const r = res.rows[0];
@@ -32,7 +32,7 @@ const toggleFavourite = async (id, username, fav) => {
 		update user_boards set isfavourite = $1::bool
 		where user_boards.username = $2 and user_boards.boardid = $3;`,
 		[fav, username, id],
-	).catch(e => e);
+	).catch(e => null);
 };
 
 module.exports = {addUser, getUser, toggleFavourite};

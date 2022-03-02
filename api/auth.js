@@ -37,4 +37,5 @@ router.post("/login", validateBody(validate.login), async (req, res) => {
 	res.send([null, {token: await createJwt({username}), user: {username, icon: user.icon}}]);
 });
 
+
 module.exports = router;

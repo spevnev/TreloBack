@@ -8,14 +8,13 @@ const router = express.Router();
 
 router.use(authenticated);
 
+
 router.get("/:boardId", hasAccess, (req, res) => res.send(res.locals.board));
 
 router.post("/", validateBody(validate.createBoard), async (req, res) => {
 	const {title, boardId} = req.body;
 
-	const success = await boardDB.addBoard(title, boardId, res.locals.user.username);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await boardDB.addBoard(title, boardId, res.locals.user.username))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
@@ -28,64 +27,51 @@ router.post("/user", validateBody(validate.addUser), isOwner, async (req, res) =
 router.post("/list", validateBody(validate.addList), isOwner, async (req, res) => {
 	const {boardId, id, title} = req.body;
 
-	const success = await boardDB.addList(boardId, id, title);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await boardDB.addList(boardId, id, title))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
 router.put("/list", validateBody(validate.changeList), isOwner, async (req, res) => {
 	const {id, title} = req.body;
 
-	const success = await boardDB.changeList(id, title);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await boardDB.changeList(id, title))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
 router.put("/user", validateBody(validate.changeRole), isOwner, async (req, res) => {
 	const {username, isOwner, boardId} = req.body;
 
-	const success = await boardDB.changeRole(boardId, username, isOwner);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await boardDB.changeRole(boardId, username, isOwner))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
 router.put("/", validateBody(validate.changeTitle), isOwner, async (req, res) => {
 	const {title, boardId} = req.body;
 
-	const success = await boardDB.changeTitle(boardId, title);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await boardDB.changeTitle(boardId, title))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
 router.delete("/:boardId", isOwner, async (req, res) => {
 	const {boardId} = req.params;
 
-	const success = await boardDB.deleteBoard(boardId);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await boardDB.deleteBoard(boardId))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
 router.delete("/list/:boardId/:id", isOwner, async (req, res) => {
 	const {id} = req.params;
 
-	const success = await boardDB.deleteList(id);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await boardDB.deleteList(id))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
 router.delete("/user/:boardId/:username", isOwner, async (req, res) => {
 	const {username, boardId} = req.params;
 
-	const success = await boardDB.deleteUser(boardId, username);
-	if (!success) return res.sendStatus(400);
-
+	if (!(await boardDB.deleteUser(boardId, username))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
+
 
 module.exports = router;

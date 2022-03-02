@@ -15,7 +15,7 @@ const getBoard = async id => {
     )
 	select * from boards, u, l where boards.id = $1::uuid;`,
 		[id],
-	).catch(e => e);
+	).catch(e => null);
 	if (!res || res.rows.length !== 1) return null;
 
 	const r = res.rows[0];
@@ -43,7 +43,6 @@ const addBoard = async (title, id, username) => {
 		await client.query("commit;");
 		return true;
 	} catch (e) {
-		console.log(e);
 		await client.query("rollback;");
 		return false;
 	}
@@ -66,7 +65,6 @@ const changeTitle = async (boardId, title) => {
 
 		return true;
 	} catch (e) {
-		console.log(e);
 		await client.query("rollback;");
 		return false;
 	}
@@ -85,7 +83,6 @@ const deleteBoard = async id => {
 
 		return true;
 	} catch (e) {
-		console.log(e);
 		await client.query("rollback;");
 		return false;
 	}
@@ -114,7 +111,6 @@ const addUser = async (board, username) => {
 
 		return [null, {...user.rows[0], password: undefined}];
 	} catch (e) {
-		console.log(e);
 		await client.query("rollback;");
 		return ["Error"];
 	}
@@ -135,7 +131,6 @@ const deleteUser = async (boardId, username) => {
 
 		return true;
 	} catch (e) {
-		console.log(e);
 		await client.query("rollback;");
 		return false;
 	}
