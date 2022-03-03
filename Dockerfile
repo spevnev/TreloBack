@@ -4,6 +4,7 @@ RUN mkdir app
 WORKDIR app
 
 ENV DATABASE_URL="postgresql://root:root@host.docker.internal/trelo"
+ENV NODE_ENV="production"
 ENV PORT=3000
 EXPOSE 3000
 
