@@ -28,7 +28,7 @@ const client = new Pool({
 		await client.query(`
 		create table if not exists boards
 		(
-			title varchar(20) not null,
+			title varchar(30) not null,
 			id    uuid     primary key
 		);`);
 		await client.query(`
