@@ -44,7 +44,7 @@ router.post("/addFiles", hasAccess, validateBody(validate.addFile), (req, res) =
 router.put("/", hasAccess, validateBody(validate.changeCard), async (req, res) => {
 	const {card} = req.body;
 
-	if (!(await cardDB.changeCard(card.title, card.description, card.listId, card.images, card.assigned, card.id))) return res.sendStatus(400);
+	if (!(await cardDB.changeCard(card))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 

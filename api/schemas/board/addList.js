@@ -17,8 +17,12 @@ module.exports = ajv.compile({
 			minLength: 1,
 			maxLength: 30,
 		},
+		order: {
+			type: "number",
+			minimum: 0,
+		},
 	},
-	required: ["boardId", "id", "title"],
+	required: ["boardId", "id", "title", "order"],
 	additionalProperties: false,
 	type: "object",
 });

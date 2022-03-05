@@ -34,9 +34,10 @@ const client = new Pool({
 		await client.query(`
 		create table if not exists board_lists
 		(
-			boardId uuid        not null,
-			title   varchar(20) not null,
-			id      uuid unique not null
+			boardId   uuid        not null,
+			title     varchar(20) not null,
+			id        uuid unique not null,
+			listOrder smallint    not null
 		);`);
 		await client.query(`
 		create table if not exists board_users
@@ -51,6 +52,7 @@ const client = new Pool({
 		(
 			id          uuid        primary key,
 			listId      uuid           not null,
+			cardOrder   smallint       not null,
 			boardId     uuid           not null,
 			title       varchar(64)    not null,
 			description varchar(2000)  not null,

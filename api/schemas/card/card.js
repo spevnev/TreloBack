@@ -18,6 +18,10 @@ module.exports = [
 					type: "string",
 					format: "uuid",
 				},
+				order: {
+					type: "number",
+					minimum: 0,
+				},
 				description: {
 					type: "string",
 					maxLength: 2000,
@@ -57,7 +61,7 @@ module.exports = [
 					maxItems: 10,
 				},
 			},
-			required: ["title", "description", "assigned", "files", "images", "id", "listId"],
+			required: ["title", "description", "assigned", "files", "images", "id", "listId", "order"],
 			additionalProperties: false,
 		},
 	},

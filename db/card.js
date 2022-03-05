@@ -11,13 +11,19 @@ const getCards = async boardId => {
 	).catch(e => null);
 	if (!res) return null;
 
-	return res.rows.map(cur => ({...cur, files: cur.files.filter(a => a), listId: cur.listid, listid: undefined, boardid: undefined}));
+	return res.rows.map(cur => ({
+		...cur,
+		files: cur.files.filter(a => a),
+		listId: cur.listid, listid: undefined,
+		order: cur.cardorder, cardorder: undefined,
+		boardid: undefined,
+	}));
 };
 
-const addCard = async (boardId, {title, id, listId}) => {
+const addCard = async (boardId, {title, id, listId, order}) => {
 	const res = await client.query(
-		"insert into cards(title, id, listId, boardId, description, images, assigned) values ($1, $2, $3, $4, '', '{}', '{}');",
-		[title, id, listId, boardId],
+		"insert into cards(title, id, listId, cardOrder, boardId, description, images, assigned) values ($1, $2, $3, $4, $5, '', '{}', '{}');",
+		[title, id, listId, order, boardId],
 	).catch(e => null);
 
 	return res ? res.rows : null;
@@ -50,12 +56,12 @@ const deleteFile = async url => {
 	return res ? res.rows : null;
 };
 
-const changeCard = async (title, description, listId, images, assigned, id) => {
+const changeCard = async ({title, description, listId, order, images, assigned, id}) => {
 	const res = await client.query(`
 		update cards
-		set (title, description, listId, images, assigned) = ($1, $2, $3, $4, $5)
-		where cards.id = $6::uuid;`,
-		[title, description, listId, images, assigned, id],
+		set (title, description, listId, cardorder, images, assigned) = ($1, $2, $3, $4, $5, $6)
+		where cards.id = $7::uuid;`,
+		[title, description, listId, order, images, assigned, id],
 	).catch(e => null);
 
 	return res ? res.rows : null;

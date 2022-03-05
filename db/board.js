@@ -20,16 +20,20 @@ const getBoard = async id => {
 
 	const r = res.rows[0];
 	r.lists = r.lists || [];
-	return {...r, lists: r.lists.filter(a => a), users: r.users.map(cur => ({icon: cur.icon, isOwner: cur.isowner, username: cur.username}))};
+	return {
+		...r,
+		lists: r.lists.filter(l => l).map(cur => ({...cur, order: cur.listorder, listorder: undefined})),
+		users: r.users.map(cur => ({icon: cur.icon, isOwner: cur.isowner, username: cur.username})),
+	};
 };
 
 const addBoard = async (title, id, username) => {
 	try {
 		await client.query("begin;");
 		await client.query(`insert into boards(title, id) values ($1, $2);`, [title, id]);
-		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Backlog', $2)`, [id, randomUUID()]);
-		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Progress', $2)`, [id, randomUUID()]);
-		await client.query(`insert into board_lists(boardid, title, id) values ($1, 'Done', $2)`, [id, randomUUID()]);
+		await client.query(`insert into board_lists(boardId, title, listOrder, id) values ($1, 'Backlog', 0, $2)`, [id, randomUUID()]);
+		await client.query(`insert into board_lists(boardId, title, listOrder, id) values ($1, 'Progress', 1, $2)`, [id, randomUUID()]);
+		await client.query(`insert into board_lists(boardId, title, listOrder, id) values ($1, 'Done', 2, $2)`, [id, randomUUID()]);
 		await client.query(`
 			insert into board_users(boardId, username, isOwner, icon) 
 			values ($1::uuid, $2::varchar, true, (select icon from users where users.username = $2::varchar))`,
@@ -159,19 +163,19 @@ const changeRole = async (boardId, username, isOwner) => {
 	}
 };
 
-const addList = async (boardId, id, title) => {
+const addList = async (boardId, id, title, order) => {
 	const res = await client.query(
-		"insert into board_lists(boardId, title, id) values ($1, $2, $3);",
-		[boardId, title, id],
+		"insert into board_lists(boardId, title, listOrder, id) values ($1, $2, $3, $4);",
+		[boardId, title, order, id],
 	).catch(e => null);
 
 	return res ? res.rows : null;
 };
 
-const changeList = async (id, title) => {
+const changeList = async (id, title, order) => {
 	const res = await client.query(
-		`update board_lists set title = $1 where board_lists.id = $2::uuid;`,
-		[title, id],
+		`update board_lists set (title, listOrder) = ($1, $2) where board_lists.id = $3::uuid;`,
+		[title, order, id],
 	).catch(e => null);
 
 	return res ? res.rows : null;
