@@ -20,7 +20,7 @@ module.exports = [
 				},
 				description: {
 					type: "string",
-					maxLength: 500,
+					maxLength: 2000,
 				},
 				assigned: {
 					type: "array",

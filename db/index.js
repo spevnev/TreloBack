@@ -53,7 +53,7 @@ const client = new Pool({
 			listId      uuid           not null,
 			boardId     uuid           not null,
 			title       varchar(64)    not null,
-			description varchar(500)   not null,
+			description varchar(2000)  not null,
 			images      varchar(256)[] not null,
 			assigned    varchar(25)[]  not null
 		);`);
