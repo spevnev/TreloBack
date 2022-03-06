@@ -3,6 +3,7 @@ const cardDB = require("../db/card");
 const validateBody = require("./schemas/validateBody");
 const validate = require("./schemas/card");
 const express = require("express");
+const {getCards} = require("../db/card");
 
 const router = express.Router();
 
@@ -45,6 +46,13 @@ router.put("/", hasAccess, validateBody(validate.changeCard), async (req, res) =
 	const {card} = req.body;
 
 	if (!(await cardDB.changeCard(card))) return res.sendStatus(400);
+	res.sendStatus(200);
+});
+
+router.put("/reorder", hasAccess, validateBody(validate.reorderCards), async (req, res) => {
+	const {order} = req.body;
+
+	if (!(await cardDB.reorderCards(order))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 

@@ -67,6 +67,20 @@ const changeCard = async ({title, description, listId, order, images, assigned, 
 	return res ? res.rows : null;
 };
 
+const reorderCards = async order => {
+	const values = order.map(({order, id}) => `(${order}::smallint,'${id}'::uuid)`).join(",");
+
+	const res = await client.query(`
+		update cards 
+		set cardorder = t.cardorder 
+		from (values ${values} ) 
+		as t(cardorder, id) 
+		where t.id = cards.id;`,
+	).catch(e => null);
+
+	return res ? res.rows : null;
+};
+
 const deleteCard = async id => {
 	const res = await client.query(
 		"delete from cards where cards.id = $1::uuid;",
@@ -76,4 +90,4 @@ const deleteCard = async id => {
 	return res ? res.rows : null;
 };
 
-module.exports = {getCards, addCard, changeCard, deleteCard, renameFile, addFile, deleteFile};
+module.exports = {getCards, addCard, changeCard, reorderCards, deleteCard, renameFile, addFile, deleteFile};
