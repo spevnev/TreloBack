@@ -3,7 +3,6 @@ const cardDB = require("../db/card");
 const validateBody = require("./schemas/validateBody");
 const validate = require("./schemas/card");
 const express = require("express");
-const {getCards} = require("../db/card");
 
 const router = express.Router();
 
