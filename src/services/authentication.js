@@ -1,5 +1,5 @@
 const boardDB = require("../db/board");
-const {verifyJwt} = require("../services/jwt");
+const {verifyJwt} = require("./jwt");
 
 const verify = async token => {
 	if (!token || !token.startsWith("Bearer ")) return ["Error"];

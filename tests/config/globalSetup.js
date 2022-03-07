@@ -3,7 +3,7 @@ const DBGlobalSetup = require("@databases/pg-test/jest/globalSetup");
 const globalSetup = async () => {
 	await DBGlobalSetup();
 
-	const createTables = require("../../db/createTables");
+	const createTables = require("../../src/db/createTables");
 	await createTables();
 };
 

@@ -2,7 +2,7 @@
   "name": "treloback",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "nodemon",
     "test": "jest"

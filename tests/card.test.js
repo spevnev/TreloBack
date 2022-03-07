@@ -1,8 +1,8 @@
 const supertest = require("supertest");
-const {addBoard} = require("../db/board");
+const {addBoard} = require("../src/db/board");
 const {randomUUID} = require("crypto");
 
-const app = require("../server")();
+const app = require("../src/server")();
 
 
 const sampleImage = "https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/512x512/plain/user.png";
