@@ -1,11 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 const api = require("./api");
+const helmet = require("helmet");
 const dbClient = require("./db");
 
 const app = express();
 
+app.use(helmet());
 app.use(cors({origin: true}));
+
 app.use("/api/", api);
 
 app.use((error, req, res, next) => {

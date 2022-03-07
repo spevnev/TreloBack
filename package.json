@@ -6,6 +6,9 @@
   "scripts": {
     "start": "nodemon"
   },
+  "engines": {
+    "node": "17.5.0"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -15,6 +18,7 @@
     "cloudinary": "^1.28.1",
     "cors": "^2.8.5",
     "express": "^4.17.2",
+    "helmet": "^5.0.2",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3"
   }
