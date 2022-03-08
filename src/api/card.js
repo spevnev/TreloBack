@@ -64,6 +64,7 @@ router.put("/renameFile", hasAccess, validateBody(validate.renameFile), async (r
 
 router.delete("/:boardId/:id", hasAccess, async (req, res) => {
 	const {id} = req.params;
+	if (!id) return res.sendStatus(400);
 
 	if (!(await cardDB.deleteCard(id))) return res.sendStatus(400);
 	res.sendStatus(200);

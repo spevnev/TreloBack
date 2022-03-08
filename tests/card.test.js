@@ -6,7 +6,10 @@ const app = require("../src/server")();
 
 
 const sampleImage = "https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/512x512/plain/user.png";
+
 const sampleBoardId = randomUUID();
+const invalidBoardId = "invalid_board_id";
+
 const sampleCard = {
 	"id": "b9d2335d-7900-44f7-99c8-7aa983f44466",
 	"title": "Test",
@@ -21,6 +24,11 @@ const sampleCard = {
 	"listId": "304c4137-be62-46a7-92ae-2889ad344d97",
 	"order": 0,
 };
+const invalidCard = {...sampleCard, order: -1, images: undefined};
+
+const sampleOrder = [{id: sampleCard.id, order: 1}];
+
+const sampleFile = {url: "string", filename: "string"};
 
 
 describe("Card", () => {
@@ -41,14 +49,7 @@ describe("Card", () => {
 	});
 
 	describe("Create", () => {
-		test("Should be 401 (Unauthorized)", async () => {
-			const res = await supertest(app)
-				.post(`/api/card/`);
-
-			expect(res.statusCode).toBe(401);
-		});
-
-		test("Should be 404 (Not found)", async () => {
+		it("Should be 404 (Not found)", async () => {
 			const res = await supertest(app)
 				.post(`/api/card/`)
 				.send({boardId: "any board id", card: sampleCard})
@@ -57,32 +58,289 @@ describe("Card", () => {
 			expect(res.statusCode).toBe(404);
 		});
 
-		test("Should be 400 (Bad request)", async () => {
-			const wrongCard = {...sampleCard, order: -1, images: undefined};
+		it("Should be 401 (Unauthorized)", async () => {
+			const res = await supertest(app)
+				.post(`/api/card/`);
 
+			expect(res.statusCode).toBe(401);
+		});
+
+		it("Should be 400 (Bad request)", async () => {
 			const res = await supertest(app)
 				.post(`/api/card/`)
-				.send({boardId: sampleBoardId, card: wrongCard})
+				.send({boardId: sampleBoardId, card: invalidCard})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(400);
 		});
+
+		it("Should be 200 (OK)", async () => {
+			const res = await supertest(app)
+				.post(`/api/card/`)
+				.send({boardId: sampleBoardId, card: sampleCard})
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(200);
+		});
 	});
 
 	describe("Get", () => {
-		test("Should be 401 (Unauthorized)", async () => {
+		it("Should be 404 (Not found)", async () => {
+			const res = await supertest(app)
+				.get(`/api/card/${invalidBoardId}`)
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(404);
+		});
+
+		it("Should be 401 (Unauthorized)", async () => {
 			const res = await supertest(app)
 				.get(`/api/card/${sampleBoardId}`);
 
 			expect(res.statusCode).toBe(401);
 		});
 
-		test("Should be 404 (Not found)", async () => {
+		it("Should be 200 (OK)", async () => {
 			const res = await supertest(app)
-				.get(`/api/card/any_board_id`)
+				.get(`/api/card/${sampleBoardId}`)
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(200);
+		});
+
+		it("Should have valid body", async () => {
+			const res = await supertest(app)
+				.get(`/api/card/${sampleBoardId}`)
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.body).toEqual({
+				id: sampleBoardId,
+				cards: [sampleCard],
+			});
+		});
+	});
+
+	describe("Change", () => {
+		it("Should be 404 (Not found)", async () => {
+			const res = await supertest(app)
+				.put(`/api/card/`)
+				.send({boardId: invalidBoardId, card: sampleCard})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(404);
+		});
+
+		it("Should be 401 (Unauthorized)", async () => {
+			const res = await supertest(app)
+				.put(`/api/card/`);
+
+			expect(res.statusCode).toBe(401);
+		});
+
+		it("Should be 400 (Bad request)", async () => {
+			const res = await supertest(app)
+				.put(`/api/card/`)
+				.send({boardId: sampleBoardId, card: invalidCard})
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(400);
+		});
+
+		it("Should be 200 (OK)", async () => {
+			const res = await supertest(app)
+				.put(`/api/card/`)
+				.send({boardId: sampleBoardId, card: sampleCard})
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(200);
+		});
+	});
+
+	describe("Reorder", () => {
+		it("Should be 404 (Not found)", async () => {
+			const res = await supertest(app)
+				.put(`/api/card/reorder`)
+				.send({boardId: invalidBoardId, order: sampleOrder})
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(404);
+		});
+
+		it("Should be 401 (Unauthorized)", async () => {
+			const res = await supertest(app)
+				.put(`/api/card/reorder`);
+
+			expect(res.statusCode).toBe(401);
+		});
+
+		it("Should be 400 (Bad request)", async () => {
+			const res = await supertest(app)
+				.put(`/api/card/reorder`)
+				.send({boardId: sampleBoardId, order: undefined})
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(400);
+		});
+
+		it("Should be 200 (OK)", async () => {
+			const res = await supertest(app)
+				.put(`/api/card/reorder`)
+				.send({boardId: sampleBoardId, order: sampleOrder})
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(200);
+		});
+
+		it("Should have valid body", async () => {
+			const res = await supertest(app)
+				.put(`/api/card/reorder`)
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.body).toEqual({});
+		});
+	});
+
+	describe("Files", () => {
+		describe("Add", () => {
+			it("Should be 404 (Not found)", async () => {
+				const res = await supertest(app)
+					.post(`/api/card/addFiles`)
+					.send({boardId: invalidBoardId, cardId: sampleCard.id, files: [sampleFile]})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(404);
+			});
+
+			it("Should be 401 (Unauthorized)", async () => {
+				const res = await supertest(app)
+					.post(`/api/card/addFiles`);
+
+				expect(res.statusCode).toBe(401);
+			});
+
+			it("Should be 400 (Bad request)", async () => {
+				const res = await supertest(app)
+					.post(`/api/card/addFiles`)
+					.send({boardId: sampleBoardId, cardId: sampleCard.id, files: undefined});
+
+				expect(res.statusCode).toBe(401);
+			});
+
+			it("Should be 200 (OK)", async () => {
+				const res = await supertest(app)
+					.post(`/api/card/addFiles`)
+					.send({boardId: sampleBoardId, cardId: sampleCard.id, files: [sampleFile]})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(200);
+			});
+		});
+
+		describe("Change", () => {
+			it("Should be 404 (Not found)", async () => {
+				const res = await supertest(app)
+					.put(`/api/card/renameFile`)
+					.send({boardId: invalidBoardId, ...sampleFile})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(404);
+			});
+
+			it("Should be 401 (Unauthorized)", async () => {
+				const res = await supertest(app)
+					.put(`/api/card/renameFile`);
+
+				expect(res.statusCode).toBe(401);
+			});
+
+			it("Should be 400 (Bad request)", async () => {
+				const res = await supertest(app)
+					.put(`/api/card/renameFile`)
+					.send({boardId: sampleBoardId, url: undefined, filename: "this_is_a_filename_over_32_characters_long"})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(400);
+			});
+
+			it("Should be 200 (OK)", async () => {
+				const res = await supertest(app)
+					.put(`/api/card/renameFile`)
+					.send({boardId: sampleBoardId, ...sampleFile})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(200);
+			});
+		});
+
+		describe("Delete", () => {
+			it("Should be 404 (Not found)", async () => {
+				const res = await supertest(app)
+					.post(`/api/card/deleteFile`)
+					.send({boardId: invalidBoardId, url: sampleFile.url})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(404);
+			});
+
+			it("Should be 401 (Unauthorized)", async () => {
+				const res = await supertest(app)
+					.post(`/api/card/deleteFile`);
+
+				expect(res.statusCode).toBe(401);
+			});
+
+			it("Should be 400 (Bad request)", async () => {
+				const res = await supertest(app)
+					.post(`/api/card/deleteFile`)
+					.send({boardId: sampleBoardId, url: undefined})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(400);
+			});
+
+			it("Should be 200 (OK)", async () => {
+				const res = await supertest(app)
+					.post(`/api/card/deleteFile`)
+					.send({boardId: sampleBoardId, url: sampleFile.url})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(200);
+			});
+		});
+	});
+
+	describe("Delete", () => {
+		it("Should be 404 (Not found)", async () => {
+			const res = await supertest(app)
+				.delete(`/api/card/${invalidBoardId}/${sampleCard.id}`)
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(404);
+		});
+
+		it("Should be 401 (Unauthorized)", async () => {
+			const res = await supertest(app)
+				.delete(`/api/card/${sampleBoardId}/${sampleCard.id}`);
+
+			expect(res.statusCode).toBe(401);
+		});
+
+		it("Should be 400 (Bad request)", async () => {
+			const invalidCardId = "non-uuid-string";
+
+			const res = await supertest(app)
+				.delete(`/api/card/${sampleBoardId}/${invalidCardId}`)
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(400);
+		});
+
+		it("Should be 200 (OK)", async () => {
+			const res = await supertest(app)
+				.delete(`/api/card/${sampleBoardId}/${sampleCard.id}`)
+				.set("Authorization", `Bearer ${token}`);
+
+			expect(res.statusCode).toBe(200);
 		});
 	});
 });

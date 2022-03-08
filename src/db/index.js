@@ -6,4 +6,8 @@ const client = new Pool({
 	ssl: process.env.PRODUCTION ? {rejectUnauthorized: false} : false,
 });
 
+client.on("error", e => {
+	if (process.env.NODE_ENV !== "test") throw new Error(e);
+});
+
 module.exports = client;

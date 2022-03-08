@@ -20,10 +20,10 @@ const getCards = async boardId => {
 	}));
 };
 
-const addCard = async (boardId, {title, id, listId, order}) => {
+const addCard = async (boardId, {title, id, listId, order, description, images, assigned}) => {
 	const res = await client.query(
-		"insert into cards(title, id, listId, cardOrder, boardId, description, images, assigned) values ($1, $2, $3, $4, $5, '', '{}', '{}');",
-		[title, id, listId, order, boardId],
+		"insert into cards(title, id, listId, cardOrder, boardId, description, images, assigned) values ($1, $2, $3, $4, $5, $6, $7, $8);",
+		[title, id, listId, order, boardId, description, images, assigned],
 	).catch(e => null);
 
 	return res ? res.rows : null;
