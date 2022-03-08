@@ -28,7 +28,7 @@ const getUser = async username => {
 };
 
 const toggleFavourite = async (id, username, fav) => {
-	await client.query(`
+	return await client.query(`
 		update user_boards set isfavourite = $1::bool
 		where user_boards.username = $2 and user_boards.boardid = $3;`,
 		[fav, username, id],

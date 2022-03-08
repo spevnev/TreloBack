@@ -14,7 +14,10 @@ router.post("/icon", async (req, res) => {
 	const {icon} = req.body;
 	if (!icon) return res.sendStatus(400);
 
-	res.send((await upload(icon, `icons/${randomUUID()}`).catch(e => e)).secure_url);
+	const data = await upload(icon, `icons/${randomUUID()}`).catch(e => null);
+	if (!data) return res.sendStatus(400);
+
+	res.send({url: data.secure_url});
 });
 
 router.post("/signup", validateBody(validate.signup), async (req, res) => {

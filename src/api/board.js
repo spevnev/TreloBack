@@ -18,34 +18,34 @@ router.post("/", validateBody(validate.createBoard), async (req, res) => {
 	res.sendStatus(200);
 });
 
-router.post("/user", validateBody(validate.addUser), isOwner, async (req, res) => {
+router.post("/user", isOwner, validateBody(validate.addUser), async (req, res) => {
 	const {username} = req.body;
 
 	res.send(await boardDB.addUser(res.locals.board, username));
 });
 
-router.post("/list", validateBody(validate.addList), isOwner, async (req, res) => {
+router.post("/list", isOwner, validateBody(validate.addList), async (req, res) => {
 	const {boardId, id, title, order} = req.body;
 
 	if (!(await boardDB.addList(boardId, id, title, order))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
-router.put("/list", validateBody(validate.changeList), isOwner, async (req, res) => {
+router.put("/list", isOwner, validateBody(validate.changeList), async (req, res) => {
 	const {id, title, order} = req.body;
 
 	if (!(await boardDB.changeList(id, title, order))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
-router.put("/user", validateBody(validate.changeRole), isOwner, async (req, res) => {
+router.put("/user", isOwner, validateBody(validate.changeRole), async (req, res) => {
 	const {username, isOwner, boardId} = req.body;
 
 	if (!(await boardDB.changeRole(boardId, username, isOwner))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
-router.put("/", validateBody(validate.changeTitle), isOwner, async (req, res) => {
+router.put("/", isOwner, validateBody(validate.changeTitle), async (req, res) => {
 	const {title, boardId} = req.body;
 
 	if (!(await boardDB.changeTitle(boardId, title))) return res.sendStatus(400);

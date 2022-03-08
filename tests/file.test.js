@@ -7,7 +7,8 @@ const app = require("../src/server")();
 
 
 const sampleImage = "https://e7.pngegg.com/pngimages/178/595/png-clipart-user-profile-computer-icons-login-user-avatars-monochrome-black-thumbnail.png";
-const sampleUser = {username: "FILE_USER", password: "TEST_PASSWORD", icon: sampleImage};
+
+const sampleUser = {username: "FILE_USER", password: "TEST_PASSWORD", icon: randomUUID()};
 
 const sampleBoardId = randomUUID();
 const invalidBoardId = "invalid_board_id";
@@ -62,15 +63,6 @@ describe("File", () => {
 			expect(res.statusCode).toBe(400);
 		});
 
-		it("Should be 200 (OK)", async () => {
-			const res = await supertest(app)
-				.post(`/api/file/upload`)
-				.send({boardId: sampleBoardId, files: [file]})
-				.set("Authorization", `Bearer ${token}`);
-
-			expect(res.statusCode).toBe(200);
-		});
-
 		it("Should have error inside of a body", async () => {
 			const invalidFile = "not-a-base64-file";
 
@@ -79,6 +71,7 @@ describe("File", () => {
 				.send({boardId: sampleBoardId, files: [invalidFile]})
 				.set("Authorization", `Bearer ${token}`);
 
+			expect(res.statusCode).toBe(200);
 			expect(res.body[0].errno).toBeDefined();
 			expect(res.body[1]).toBeFalsy();
 		});
@@ -89,6 +82,7 @@ describe("File", () => {
 				.send({boardId: sampleBoardId, files: [file]})
 				.set("Authorization", `Bearer ${token}`);
 
+			expect(res.statusCode).toBe(200);
 			expect(res.body[0]).toBeFalsy();
 			expect(typeof res.body[1]).toEqual("object");
 			expect(res.body[1].length).toBeGreaterThan(0);

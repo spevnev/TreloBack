@@ -1,74 +1,45 @@
 const supertest = require("supertest");
-const {addBoard} = require("../src/db/board");
 const {randomUUID} = require("crypto");
 
 const app = require("../src/server")();
 
 
-const sampleUser = {username: "CARD_USER", password: "TEST_PASSWORD", icon: randomUUID()};
+const sampleUser = {username: "BOARD_USER", password: "TEST_PASSWORD", icon: randomUUID()};
 
 const sampleBoardId = randomUUID();
 const invalidBoardId = "invalid_board_id";
 
-const sampleCard = {
-	"id": "b9d2335d-7900-44f7-99c8-7aa983f44466",
-	"title": "Test",
-	"description": "description",
-	"images": [
-		"https://res.cloudinary.com/trelo/image/authenticated/s--Y06Jhz-j--/v1646643133/a1297ad3-e328-4f0e-8f05-92d76faf62e8/f6ccb369-9515-4798-a058-6c748db8f554.png",
-	],
-	"assigned": [
-		"TEST_USER",
-	],
-	"files": [],
-	"listId": "304c4137-be62-46a7-92ae-2889ad344d97",
-	"order": 0,
-};
-const invalidCard = {...sampleCard, order: -1, images: undefined};
+const sampleBoard = {boardId: sampleBoardId, title: "sample board"};
 
-const sampleOrder = [{id: sampleCard.id, order: 1}];
-
-const sampleFile = {url: "string", filename: "string"};
+const sampleList = {id: randomUUID(), title: "title", order: 0};
+const invalidList = {id: randomUUID(), title: "title", order: -1};
 
 
-describe("Card", () => {
+describe("Board", () => {
 	let token = null;
 
 	beforeAll(async () => {
 		// Signing up
-		const res = await supertest(app)
+		let res = await supertest(app)
 			.post(`/api/auth/signup`)
 			.send(sampleUser);
 
 		token = res.body[1].token;
 		expect(typeof token).toBe("string");
-
-		// Creating board
-		const success = await addBoard("sample board", sampleBoardId, sampleUser.username);
-		expect(success).toBeTruthy();
 	});
 
 	describe("Create", () => {
-		it("Should be 404 (Not found)", async () => {
-			const res = await supertest(app)
-				.post(`/api/card/`)
-				.send({boardId: "any board id", card: sampleCard})
-				.set("Authorization", `Bearer ${token}`);
-
-			expect(res.statusCode).toBe(404);
-		});
-
 		it("Should be 401 (Unauthorized)", async () => {
 			const res = await supertest(app)
-				.post(`/api/card/`);
+				.post("/api/board");
 
 			expect(res.statusCode).toBe(401);
 		});
 
 		it("Should be 400 (Bad request)", async () => {
 			const res = await supertest(app)
-				.post(`/api/card/`)
-				.send({boardId: sampleBoardId, card: invalidCard})
+				.post("/api/board")
+				.send({boardId: randomUUID()})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(400);
@@ -76,8 +47,8 @@ describe("Card", () => {
 
 		it("Should be 200 (OK)", async () => {
 			const res = await supertest(app)
-				.post(`/api/card/`)
-				.send({boardId: sampleBoardId, card: sampleCard})
+				.post("/api/board")
+				.send(sampleBoard)
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(200);
@@ -87,7 +58,7 @@ describe("Card", () => {
 	describe("Get", () => {
 		it("Should be 404 (Not found)", async () => {
 			const res = await supertest(app)
-				.get(`/api/card/${invalidBoardId}`)
+				.get(`/api/board/${invalidBoardId}`)
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(404);
@@ -95,29 +66,29 @@ describe("Card", () => {
 
 		it("Should be 401 (Unauthorized)", async () => {
 			const res = await supertest(app)
-				.get(`/api/card/${sampleBoardId}`);
+				.get(`/api/board/${sampleBoardId}`);
 
 			expect(res.statusCode).toBe(401);
 		});
 
 		it("Should have valid body", async () => {
 			const res = await supertest(app)
-				.get(`/api/card/${sampleBoardId}`)
+				.get(`/api/board/${sampleBoardId}`)
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(200);
-			expect(res.body).toEqual({
-				id: sampleBoardId,
-				cards: [sampleCard],
-			});
+			expect(res.body.title).toBe(sampleBoard.title);
+			expect(res.body.id).toBe(sampleBoardId);
+			expect(res.body.users).toEqual([{...sampleUser, password: undefined, isOwner: true}]);
+			expect(res.body.lists.length).toBe(3);
 		});
 	});
 
-	describe("Change", () => {
+	describe("Update", () => {
 		it("Should be 404 (Not found)", async () => {
 			const res = await supertest(app)
-				.put(`/api/card/`)
-				.send({boardId: invalidBoardId, card: sampleCard})
+				.put("/api/board")
+				.send({boardId: invalidBoardId})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(404);
@@ -125,15 +96,15 @@ describe("Card", () => {
 
 		it("Should be 401 (Unauthorized)", async () => {
 			const res = await supertest(app)
-				.put(`/api/card/`);
+				.put("/api/board");
 
 			expect(res.statusCode).toBe(401);
 		});
 
 		it("Should be 400 (Bad request)", async () => {
 			const res = await supertest(app)
-				.put(`/api/card/`)
-				.send({boardId: sampleBoardId, card: invalidCard})
+				.put("/api/board")
+				.send({boardId: sampleBoardId, title: undefined})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(400);
@@ -141,56 +112,20 @@ describe("Card", () => {
 
 		it("Should be 200 (OK)", async () => {
 			const res = await supertest(app)
-				.put(`/api/card/`)
-				.send({boardId: sampleBoardId, card: sampleCard})
+				.put("/api/board")
+				.send(sampleBoard)
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(200);
 		});
 	});
 
-	describe("Reorder", () => {
-		it("Should be 404 (Not found)", async () => {
-			const res = await supertest(app)
-				.put(`/api/card/reorder`)
-				.send({boardId: invalidBoardId, order: sampleOrder})
-				.set("Authorization", `Bearer ${token}`);
-
-			expect(res.statusCode).toBe(404);
-		});
-
-		it("Should be 401 (Unauthorized)", async () => {
-			const res = await supertest(app)
-				.put(`/api/card/reorder`);
-
-			expect(res.statusCode).toBe(401);
-		});
-
-		it("Should be 400 (Bad request)", async () => {
-			const res = await supertest(app)
-				.put(`/api/card/reorder`)
-				.send({boardId: sampleBoardId, order: undefined})
-				.set("Authorization", `Bearer ${token}`);
-
-			expect(res.statusCode).toBe(400);
-		});
-
-		it("Should be 200 (OK)", async () => {
-			const res = await supertest(app)
-				.put(`/api/card/reorder`)
-				.send({boardId: sampleBoardId, order: sampleOrder})
-				.set("Authorization", `Bearer ${token}`);
-
-			expect(res.statusCode).toBe(200);
-		});
-	});
-
-	describe("Files", () => {
-		describe("Add", () => {
+	describe("Lists", () => {
+		describe("Create", () => {
 			it("Should be 404 (Not found)", async () => {
 				const res = await supertest(app)
-					.post(`/api/card/addFiles`)
-					.send({boardId: invalidBoardId, cardId: sampleCard.id, files: [sampleFile]})
+					.post("/api/board/list")
+					.send({boardId: invalidBoardId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(404);
@@ -198,15 +133,15 @@ describe("Card", () => {
 
 			it("Should be 401 (Unauthorized)", async () => {
 				const res = await supertest(app)
-					.post(`/api/card/addFiles`);
+					.post("/api/board/list");
 
 				expect(res.statusCode).toBe(401);
 			});
 
 			it("Should be 400 (Bad request)", async () => {
 				const res = await supertest(app)
-					.post(`/api/card/addFiles`)
-					.send({boardId: sampleBoardId, cardId: sampleCard.id, files: undefined})
+					.post("/api/board/list")
+					.send({boardId: sampleBoardId, ...invalidList})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(400);
@@ -214,19 +149,19 @@ describe("Card", () => {
 
 			it("Should be 200 (OK)", async () => {
 				const res = await supertest(app)
-					.post(`/api/card/addFiles`)
-					.send({boardId: sampleBoardId, cardId: sampleCard.id, files: [sampleFile]})
+					.post("/api/board/list")
+					.send({boardId: sampleBoardId, ...sampleList})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(200);
 			});
 		});
 
-		describe("Change", () => {
+		describe("Update", () => {
 			it("Should be 404 (Not found)", async () => {
 				const res = await supertest(app)
-					.put(`/api/card/renameFile`)
-					.send({boardId: invalidBoardId, ...sampleFile})
+					.put("/api/board/list")
+					.send({boardId: invalidBoardId, ...sampleList})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(404);
@@ -234,15 +169,15 @@ describe("Card", () => {
 
 			it("Should be 401 (Unauthorized)", async () => {
 				const res = await supertest(app)
-					.put(`/api/card/renameFile`);
+					.put("/api/board/list");
 
 				expect(res.statusCode).toBe(401);
 			});
 
 			it("Should be 400 (Bad request)", async () => {
 				const res = await supertest(app)
-					.put(`/api/card/renameFile`)
-					.send({boardId: sampleBoardId, url: undefined, filename: "this_is_a_filename_over_32_characters_long"})
+					.put("/api/board/list")
+					.send({boardId: sampleBoardId, ...invalidList})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(400);
@@ -250,8 +185,100 @@ describe("Card", () => {
 
 			it("Should be 200 (OK)", async () => {
 				const res = await supertest(app)
-					.put(`/api/card/renameFile`)
-					.send({boardId: sampleBoardId, ...sampleFile})
+					.put("/api/board/list")
+					.send({boardId: sampleBoardId, ...sampleList})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(200);
+			});
+		});
+
+		describe("Delete", () => {
+			it("Should be 404 (Not found)", async () => {
+				const invalidListId = "invalid_list_id";
+
+				const res = await supertest(app)
+					.delete(`/api/board/list/${invalidBoardId}/${invalidListId}`)
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(404);
+			});
+
+			it("Should be 401 (Unauthorized)", async () => {
+				const res = await supertest(app)
+					.delete(`/api/board/list/${invalidBoardId}/${sampleList.id}`);
+
+				expect(res.statusCode).toBe(401);
+			});
+
+			it("Should be 200 (OK)", async () => {
+				const res = await supertest(app)
+					.delete(`/api/board/list/${sampleBoardId}/${sampleList.id}`)
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(200);
+			});
+		});
+	});
+
+	describe("Users", () => {
+		describe("Create", () => {
+			it("Should be 401 (Unauthorized)", async () => {
+				const res = await supertest(app)
+					.post("/api/board/user");
+
+				expect(res.statusCode).toBe(401);
+			});
+
+			it("Should be 400 (Bad request)", async () => {
+				const res = await supertest(app)
+					.post("/api/board/user")
+					.send({boardId: sampleBoardId, username: undefined})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(400);
+			});
+
+			it("Should be 200 (OK)", async () => {
+				const res = await supertest(app)
+					.post("/api/board/user")
+					.send({boardId: sampleBoardId, username: "CARD_USER"})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(200);
+			});
+		});
+
+		describe("Update", () => {
+			it("Should be 404 (Not found)", async () => {
+				const res = await supertest(app)
+					.put("/api/board/user")
+					.send({boardId: invalidBoardId})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(404);
+			});
+
+			it("Should be 401 (Unauthorized)", async () => {
+				const res = await supertest(app)
+					.put("/api/board/user");
+
+				expect(res.statusCode).toBe(401);
+			});
+
+			it("Should be 400 (Bad request)", async () => {
+				const res = await supertest(app)
+					.put("/api/board/user")
+					.send({boardId: sampleBoardId, isOwner: "should be bool"})
+					.set("Authorization", `Bearer ${token}`);
+
+				expect(res.statusCode).toBe(400);
+			});
+
+			it("Should be 200 (OK)", async () => {
+				const res = await supertest(app)
+					.put("/api/board/user")
+					.send({boardId: sampleBoardId, username: sampleUser.username, isOwner: true})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(200);
@@ -261,8 +288,7 @@ describe("Card", () => {
 		describe("Delete", () => {
 			it("Should be 404 (Not found)", async () => {
 				const res = await supertest(app)
-					.post(`/api/card/deleteFile`)
-					.send({boardId: invalidBoardId, url: sampleFile.url})
+					.delete(`/api/board/user/${invalidBoardId}/${sampleUser.username}`)
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(404);
@@ -270,24 +296,14 @@ describe("Card", () => {
 
 			it("Should be 401 (Unauthorized)", async () => {
 				const res = await supertest(app)
-					.post(`/api/card/deleteFile`);
+					.delete(`/api/board/user/${sampleBoardId}/${sampleUser.username}`);
 
 				expect(res.statusCode).toBe(401);
 			});
 
-			it("Should be 400 (Bad request)", async () => {
-				const res = await supertest(app)
-					.post(`/api/card/deleteFile`)
-					.send({boardId: sampleBoardId, url: undefined})
-					.set("Authorization", `Bearer ${token}`);
-
-				expect(res.statusCode).toBe(400);
-			});
-
 			it("Should be 200 (OK)", async () => {
 				const res = await supertest(app)
-					.post(`/api/card/deleteFile`)
-					.send({boardId: sampleBoardId, url: sampleFile.url})
+					.delete(`/api/board/user/${sampleBoardId}/CARD USER`)
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(200);
@@ -298,7 +314,7 @@ describe("Card", () => {
 	describe("Delete", () => {
 		it("Should be 404 (Not found)", async () => {
 			const res = await supertest(app)
-				.delete(`/api/card/${invalidBoardId}/${sampleCard.id}`)
+				.delete(`/api/board/${invalidBoardId}`)
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(404);
@@ -306,24 +322,14 @@ describe("Card", () => {
 
 		it("Should be 401 (Unauthorized)", async () => {
 			const res = await supertest(app)
-				.delete(`/api/card/${sampleBoardId}/${sampleCard.id}`);
+				.delete(`/api/board/${sampleBoardId}`);
 
 			expect(res.statusCode).toBe(401);
 		});
 
-		it("Should be 400 (Bad request)", async () => {
-			const invalidCardId = "non-uuid-string";
-
-			const res = await supertest(app)
-				.delete(`/api/card/${sampleBoardId}/${invalidCardId}`)
-				.set("Authorization", `Bearer ${token}`);
-
-			expect(res.statusCode).toBe(400);
-		});
-
 		it("Should be 200 (OK)", async () => {
 			const res = await supertest(app)
-				.delete(`/api/card/${sampleBoardId}/${sampleCard.id}`)
+				.delete(`/api/board/${sampleBoardId}`)
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(200);

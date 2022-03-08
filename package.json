@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
-  "scripts": {
-    "start": "nodemon",
-    "test": "jest"
-  },
   "engines": {
     "node": "17.5.0"
   },
   "author": "",
   "license": "ISC",
+  "scripts": {
+    "start": "nodemon",
+    "test": "jest"
+  },
   "dependencies": {
     "@databases/pg-test": "^3.1.2",
     "ajv": "^8.10.0",

@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 
-router.use("/file/", express.json({limit: "100mb"}), require("./files"));
+router.use("/file/", express.json({limit: "100mb"}), require("./file"));
 
 
 router.use(express.json({limit: "10mb"}));
