@@ -11,6 +11,6 @@ EXPOSE 3000
 COPY package.json package.json
 RUN npm install --only=prod --no-audit
 
-COPY . .
+COPY src .
 
-CMD ["node", "src"]
+CMD ["node", "."]
