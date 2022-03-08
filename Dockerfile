@@ -13,4 +13,4 @@ RUN npm install --only=prod --no-audit
 
 COPY . .
 
-CMD ["node", "app"]
+CMD ["node", "src"]

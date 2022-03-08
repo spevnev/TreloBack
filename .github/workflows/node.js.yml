@@ -9,19 +9,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Get
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2
         with:
           node-version: '17.5.x'
-      - run: npm install
-      - run: npm test
+
+      - name: Cache node modules
+          uses: actions/cache@v2
+          env:
+            cache-name: cache-node-modules
+          with:
+            path: ~/.npm
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+              ${{ runner.os }}-build-${{ env.cache-name }}-
+              ${{ runner.os }}-build-
+              ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
   deploy:
     runs-on: ubuntu-latest
     
     needs: test
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Get
+        uses: actions/checkout@v2
+
       - name: Heroku Docker Container Deploy
         uses: jctaveras/heroku-deploy@v2.1.3
         with:
