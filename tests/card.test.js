@@ -6,6 +6,7 @@ const app = require("../src/server")();
 
 
 const sampleImage = "https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/512x512/plain/user.png";
+const sampleUser = {username: "CARD_USER", password: "TEST_PASSWORD", icon: sampleImage};
 
 const sampleBoardId = randomUUID();
 const invalidBoardId = "invalid_board_id";
@@ -38,13 +39,13 @@ describe("Card", () => {
 		// Signing up
 		const res = await supertest(app)
 			.post(`/api/auth/signup`)
-			.send({username: "TEST_USER", password: "TEST_PASSWORD", icon: sampleImage});
+			.send(sampleUser);
 
 		token = res.body[1].token;
 		expect(typeof token).toBe("string");
 
 		// Creating board
-		const success = await addBoard("sample board", sampleBoardId, "TEST_USER");
+		const success = await addBoard("sample board", sampleBoardId, sampleUser.username);
 		expect(success).toBeTruthy();
 	});
 

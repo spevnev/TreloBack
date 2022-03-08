@@ -10,6 +10,7 @@ router.use(authenticated);
 
 router.post("/upload", hasAccess, async (req, res) => {
 	const {boardId, files} = req.body;
+	if (!boardId || !files) return res.sendStatus(400);
 
 	await Promise.all(files.map(file => upload(file, `${boardId}/${randomUUID()}`)))
 		.then(result => res.send([null, result.map(cur => cur.secure_url)]))

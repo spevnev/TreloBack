@@ -25,6 +25,7 @@
     "pg": "^8.7.3"
   },
   "devDependencies": {
+    "axios": "^0.26.0",
     "jest": "^27.5.1",
     "supertest": "^6.2.2"
   }
