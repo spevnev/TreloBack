@@ -2,7 +2,7 @@
   "name": "treloback",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "index.js",
   "engines": {
     "node": "17.5.0"
   },
