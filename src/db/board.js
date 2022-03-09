@@ -172,7 +172,7 @@ const addList = async (boardId, {title, order, id}) => {
 	return res ? res.rows : null;
 };
 
-const changeList = async (id, title, order) => {
+const changeList = async ({id, title, order}) => {
 	const res = await client.query(
 		`update board_lists set (title, listOrder) = ($1, $2) where board_lists.id = $3::uuid;`,
 		[title, order, id],

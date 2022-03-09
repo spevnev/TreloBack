@@ -32,9 +32,9 @@ router.post("/list", isOwner, validateBody(validate.addList), async (req, res) =
 });
 
 router.put("/list", isOwner, validateBody(validate.changeList), async (req, res) => {
-	const {id, title, order} = req.body;
+	const {list} = req.body;
 
-	if (!(await boardDB.changeList(id, title, order))) return res.sendStatus(400);
+	if (!(await boardDB.changeList(list))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 

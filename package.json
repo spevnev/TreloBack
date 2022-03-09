@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "start": "nodemon",
+    "start": "nodemon src",
     "test": "jest"
   },
   "dependencies": {
