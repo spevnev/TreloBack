@@ -226,7 +226,7 @@ describe("Card", () => {
 			it("Should be 404 (Not found)", async () => {
 				const res = await supertest(app)
 					.put(`/api/card/renameFile`)
-					.send({boardId: invalidBoardId, ...sampleFile})
+					.send({boardId: invalidBoardId, file: sampleFile})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(404);
@@ -240,9 +240,11 @@ describe("Card", () => {
 			});
 
 			it("Should be 400 (Bad request)", async () => {
+				const invalidFile = {url: undefined, filename: "this_is_a_filename_over_32_characters_long"};
+
 				const res = await supertest(app)
 					.put(`/api/card/renameFile`)
-					.send({boardId: sampleBoardId, url: undefined, filename: "this_is_a_filename_over_32_characters_long"})
+					.send({boardId: sampleBoardId, file: invalidFile})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(400);
@@ -251,7 +253,7 @@ describe("Card", () => {
 			it("Should be 200 (OK)", async () => {
 				const res = await supertest(app)
 					.put(`/api/card/renameFile`)
-					.send({boardId: sampleBoardId, ...sampleFile})
+					.send({boardId: sampleBoardId, file: sampleFile})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(200);

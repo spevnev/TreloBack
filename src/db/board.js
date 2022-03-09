@@ -163,7 +163,7 @@ const changeRole = async (boardId, username, isOwner) => {
 	}
 };
 
-const addList = async (boardId, id, title, order) => {
+const addList = async (boardId, {title, order, id}) => {
 	const res = await client.query(
 		"insert into board_lists(boardId, title, listOrder, id) values ($1, $2, $3, $4);",
 		[boardId, title, order, id],

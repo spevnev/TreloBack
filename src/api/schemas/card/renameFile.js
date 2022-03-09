@@ -8,16 +8,23 @@ module.exports = ajv.compile({
 			type: "string",
 			format: "uuid",
 		},
-		url: {
-			type: "string",
-		},
-		filename: {
-			type: "string",
-			minLength: 1,
-			maxLength: 32,
+		file: {
+			properties: {
+				url: {
+					type: "string",
+				},
+				filename: {
+					type: "string",
+					minLength: 1,
+					maxLength: 32,
+				},
+			},
+			required: ["url", "filename"],
+			additionalProperties: false,
+			type: "object",
 		},
 	},
-	required: ["boardId", "url", "filename"],
+	required: ["boardId", "file"],
 	additionalProperties: false,
 	type: "object",
 });

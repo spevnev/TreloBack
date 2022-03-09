@@ -25,9 +25,9 @@ router.post("/user", isOwner, validateBody(validate.addUser), async (req, res) =
 });
 
 router.post("/list", isOwner, validateBody(validate.addList), async (req, res) => {
-	const {boardId, id, title, order} = req.body;
+	const {boardId, list} = req.body;
 
-	if (!(await boardDB.addList(boardId, id, title, order))) return res.sendStatus(400);
+	if (!(await boardDB.addList(boardId, list))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 

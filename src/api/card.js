@@ -56,9 +56,9 @@ router.put("/reorder", hasAccess, validateBody(validate.reorderCards), async (re
 });
 
 router.put("/renameFile", hasAccess, validateBody(validate.renameFile), async (req, res) => {
-	const {filename, url} = req.body;
+	const {file} = req.body;
 
-	if (!(await cardDB.renameFile(url, filename))) return res.sendStatus(400);
+	if (!(await cardDB.renameFile(file.url, file.filename))) return res.sendStatus(400);
 	res.sendStatus(200);
 });
 
