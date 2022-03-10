@@ -1,5 +1,8 @@
-module.exports = validate => (req, res, next) => {
-	validate(req.body)
-		.then(() => next())
-		.catch(e => res.status(400).send(e));
+module.exports = validate => async (req, res, next) => {
+	try {
+		await validate(req.body);
+		next();
+	} catch (e) {
+		res.status(400).send(e);
+	}
 };
