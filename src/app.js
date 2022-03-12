@@ -3,7 +3,18 @@ const cors = require("cors");
 const api = require("./api");
 const express = require("express");
 
+const wssRefMock = [{
+	to: a => ({
+		except: () => ({
+			emit: () => 1,
+		}),
+		emit: () => 1,
+	}),
+}];
+
 const createApp = wssReference => {
+	if (process.env.NODE_ENV === "test") wssReference = wssRefMock;
+
 	const app = express();
 
 	app.use(helmet());

@@ -6,6 +6,8 @@ const app = require("../src/app")();
 
 const sampleUser = {username: "BOARD_USER", password: "TEST_PASSWORD", icon: randomUUID()};
 
+const sampleSocketId = "sample_socket_id";
+
 const sampleBoardId = randomUUID();
 const invalidBoardId = "invalid_board_id";
 
@@ -88,7 +90,7 @@ describe("Board", () => {
 		it("Should be 404 (Not found)", async () => {
 			const res = await supertest(app)
 				.put("/api/board")
-				.send({boardId: invalidBoardId})
+				.send({boardId: invalidBoardId, socketId: sampleSocketId})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(404);
@@ -104,7 +106,7 @@ describe("Board", () => {
 		it("Should be 400 (Bad request)", async () => {
 			const res = await supertest(app)
 				.put("/api/board")
-				.send({boardId: sampleBoardId, title: undefined})
+				.send({boardId: sampleBoardId, title: undefined, socketId: sampleSocketId})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(400);
@@ -113,7 +115,7 @@ describe("Board", () => {
 		it("Should be 200 (OK)", async () => {
 			const res = await supertest(app)
 				.put("/api/board")
-				.send(sampleBoard)
+				.send({...sampleBoard, socketId: sampleSocketId})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(200);
@@ -125,7 +127,7 @@ describe("Board", () => {
 			it("Should be 404 (Not found)", async () => {
 				const res = await supertest(app)
 					.post("/api/board/list")
-					.send({boardId: invalidBoardId})
+					.send({boardId: invalidBoardId, socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(404);
@@ -141,7 +143,7 @@ describe("Board", () => {
 			it("Should be 400 (Bad request)", async () => {
 				const res = await supertest(app)
 					.post("/api/board/list")
-					.send({boardId: sampleBoardId, list: invalidList})
+					.send({boardId: sampleBoardId, list: invalidList, socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(400);
@@ -150,7 +152,7 @@ describe("Board", () => {
 			it("Should be 200 (OK)", async () => {
 				const res = await supertest(app)
 					.post("/api/board/list")
-					.send({boardId: sampleBoardId, list: sampleList})
+					.send({boardId: sampleBoardId, list: sampleList, socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(200);
@@ -161,7 +163,7 @@ describe("Board", () => {
 			it("Should be 404 (Not found)", async () => {
 				const res = await supertest(app)
 					.put("/api/board/list")
-					.send({boardId: invalidBoardId, list: sampleList})
+					.send({boardId: invalidBoardId, list: sampleList, socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(404);
@@ -177,7 +179,7 @@ describe("Board", () => {
 			it("Should be 400 (Bad request)", async () => {
 				const res = await supertest(app)
 					.put("/api/board/list")
-					.send({boardId: sampleBoardId, list: invalidList})
+					.send({boardId: sampleBoardId, list: invalidList, socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(400);
@@ -186,7 +188,7 @@ describe("Board", () => {
 			it("Should be 200 (OK)", async () => {
 				const res = await supertest(app)
 					.put("/api/board/list")
-					.send({boardId: sampleBoardId, list: sampleList})
+					.send({boardId: sampleBoardId, list: sampleList, socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(200);
@@ -222,7 +224,7 @@ describe("Board", () => {
 	});
 
 	describe("Users", () => {
-		describe("Create", () => {
+		describe("Add", () => {
 			it("Should be 401 (Unauthorized)", async () => {
 				const res = await supertest(app)
 					.post("/api/board/user");
@@ -233,7 +235,7 @@ describe("Board", () => {
 			it("Should be 400 (Bad request)", async () => {
 				const res = await supertest(app)
 					.post("/api/board/user")
-					.send({boardId: sampleBoardId, username: undefined})
+					.send({boardId: sampleBoardId, username: undefined, socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(400);
@@ -242,7 +244,7 @@ describe("Board", () => {
 			it("Should be 200 (OK)", async () => {
 				const res = await supertest(app)
 					.post("/api/board/user")
-					.send({boardId: sampleBoardId, username: "CARD_USER"})
+					.send({boardId: sampleBoardId, username: "CARD_USER", socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(200);
@@ -253,7 +255,7 @@ describe("Board", () => {
 			it("Should be 404 (Not found)", async () => {
 				const res = await supertest(app)
 					.put("/api/board/user")
-					.send({boardId: invalidBoardId})
+					.send({boardId: invalidBoardId, socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(404);
@@ -269,7 +271,7 @@ describe("Board", () => {
 			it("Should be 400 (Bad request)", async () => {
 				const res = await supertest(app)
 					.put("/api/board/user")
-					.send({boardId: sampleBoardId, isOwner: "should be bool"})
+					.send({boardId: sampleBoardId, isOwner: "should be bool", socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(400);
@@ -278,7 +280,7 @@ describe("Board", () => {
 			it("Should be 200 (OK)", async () => {
 				const res = await supertest(app)
 					.put("/api/board/user")
-					.send({boardId: sampleBoardId, username: sampleUser.username, isOwner: true})
+					.send({boardId: sampleBoardId, username: sampleUser.username, isOwner: true, socketId: sampleSocketId})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(200);
