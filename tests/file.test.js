@@ -3,7 +3,7 @@ const {addBoard} = require("../src/db/board");
 const {randomUUID} = require("crypto");
 const axios = require("axios");
 
-const app = require("../src/server")();
+const app = require("../src/app")();
 
 
 const sampleImage = "https://e7.pngegg.com/pngimages/178/595/png-clipart-user-profile-computer-icons-login-user-avatars-monochrome-black-thumbnail.png";

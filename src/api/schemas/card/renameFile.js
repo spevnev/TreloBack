@@ -8,6 +8,10 @@ module.exports = ajv.compile({
 			type: "string",
 			format: "uuid",
 		},
+		socketId: {
+			type: "string",
+			minLength: 1,
+		},
 		file: {
 			properties: {
 				url: {
@@ -24,7 +28,7 @@ module.exports = ajv.compile({
 			type: "object",
 		},
 	},
-	required: ["boardId", "file"],
+	required: ["boardId", "socketId", "file"],
 	additionalProperties: false,
 	type: "object",
 });

@@ -18,12 +18,14 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/leave", async (req, res) => {
-	const {boardId} = req.body;
+	const wss = res.locals.wss;
+	const {boardId, socketId} = req.body;
 	if (!boardId) return res.sendStatus(400);
 
 	await boardDB.deleteUser(boardId, res.locals.user.username);
-
 	res.sendStatus(200);
+
+	wss.to([boardId]).except(socketId).emit("board:deleteUser", {username: res.locals.user.username, boardId});
 });
 
 router.put("/favourite", async (req, res) => {
@@ -31,7 +33,6 @@ router.put("/favourite", async (req, res) => {
 	if (!boardId || isFavourite === undefined) return res.sendStatus(400);
 
 	if (!(await userDB.toggleFavourite(boardId, res.locals.user.username, isFavourite))) return res.sendStatus(400);
-
 	res.sendStatus(200);
 });
 

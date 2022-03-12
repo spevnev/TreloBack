@@ -2,7 +2,7 @@ const supertest = require("supertest");
 const {addBoard} = require("../src/db/board");
 const {randomUUID} = require("crypto");
 
-const app = require("../src/server")();
+const app = require("../src/app")();
 
 
 const sampleUser = {username: "USER_USER", password: "TEST_PASSWORD", icon: randomUUID()};

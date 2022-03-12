@@ -22,7 +22,8 @@
     "express": "^4.17.2",
     "helmet": "^5.0.2",
     "jsonwebtoken": "^8.5.1",
-    "pg": "^8.7.3"
+    "pg": "^8.7.3",
+    "socket.io": "^4.4.1"
   },
   "devDependencies": {
     "axios": "^0.26.0",

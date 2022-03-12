@@ -1,7 +1,7 @@
 const supertest = require("supertest");
 const {randomUUID} = require("crypto");
 
-const app = require("../src/server")();
+const app = require("../src/app")();
 
 
 const sampleUser = {username: "BOARD_USER", password: "TEST_PASSWORD", icon: randomUUID()};

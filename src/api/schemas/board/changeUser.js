@@ -8,6 +8,10 @@ module.exports = ajv.compile({
 			type: "string",
 			format: "uuid",
 		},
+		socketId: {
+			type: "string",
+			minLength: 1,
+		},
 		isOwner: {
 			type: "boolean",
 		},
@@ -17,7 +21,7 @@ module.exports = ajv.compile({
 			maxLength: 25,
 		},
 	},
-	required: ["boardId", "isOwner", "username"],
+	required: ["boardId", "socketId", "isOwner", "username"],
 	additionalProperties: false,
 	type: "object",
 });

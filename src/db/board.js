@@ -52,7 +52,7 @@ const addBoard = async (title, id, username) => {
 	}
 };
 
-const changeTitle = async (boardId, title) => {
+const changeBoard = async (boardId, title) => {
 	try {
 		await client.query("begin;");
 		await client.query(`
@@ -97,7 +97,7 @@ const addUser = async (board, username) => {
 		await client.query("begin;");
 		const user = await client.query("select * from users where username = $1", [username]);
 		if (!user || user.rows.length !== 1) {
-			await client.query("commit;");
+			await client.query("rollback;");
 			return ["User doesn't exist"];
 		}
 
@@ -140,7 +140,7 @@ const deleteUser = async (boardId, username) => {
 	}
 };
 
-const changeRole = async (boardId, username, isOwner) => {
+const changeUser = async (boardId, username, isOwner) => {
 	try {
 		await client.query("begin;");
 		await client.query(`
@@ -181,9 +181,14 @@ const changeList = async ({id, title, order}) => {
 	return res ? res.rows : null;
 };
 
-const deleteList = async id => {
+const deleteList = async (boardId, id) => {
 	try {
 		await client.query("begin;");
+		const list = await client.query("select boardid from board_lists where id = $1::uuid;", [id]);
+		if (list.rows[0].boardid !== boardId) {
+			await client.query("rollback;");
+			return false;
+		}
 		await client.query("delete from board_lists where id = $1::uuid;", [id]);
 		await client.query("delete from card_files where cardid in (select id from cards where listid = $1::uuid)", [id]);
 		await client.query("delete from cards where listid = $1::uuid", [id]);
@@ -196,4 +201,4 @@ const deleteList = async id => {
 	}
 };
 
-module.exports = {getBoard, addBoard, addUser, changeTitle, deleteBoard, deleteUser, changeRole, addList, changeList, deleteList};
+module.exports = {getBoard, addBoard, addUser, changeBoard, deleteBoard, deleteUser, changeUser, addList, changeList, deleteList};

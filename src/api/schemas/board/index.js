@@ -1,6 +1,7 @@
 const addUser = require("./addUser");
 const addList = require("./addList");
-const changeRole = require("./changeRole");
-const changeTitle = require("./changeBoard");
+const changeUser = require("./changeUser");
+const changeBoard = require("./changeBoard");
+const createBoard = require("./createBoard");
 
-module.exports = {createBoard: changeTitle, addUser, addList, changeList: addList, changeRole, changeTitle};
+module.exports = {createBoard, addUser, addList, changeList: addList, changeUser, changeBoard};
