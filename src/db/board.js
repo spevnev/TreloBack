@@ -123,6 +123,29 @@ const addUser = async (board, username) => {
 const deleteUser = async (boardId, username) => {
 	try {
 		await client.query("begin;");
+		await client.query(`
+			with
+			filtered as (
+				select * from cards
+				where boardid = $1::uuid and $2 = any (cards.assigned)
+			),
+			values as (
+				select array_agg(assignee) as assigned, tbl.id
+				from (select unnest(assigned) as assignee, id from filtered) as tbl
+				where assignee != $2
+				group by tbl.id
+			),
+			nonnull as (
+				select coalesce(values.assigned, '{}') as assigned, filtered.id
+				from values
+				right outer join filtered
+				on values.id = filtered.id
+			)
+			update cards
+			set assigned = nonnull.assigned
+			from nonnull
+			where cards.id = nonnull.id;
+		`, [boardId, username]);
 		await client.query(
 			"delete from board_users where boardid = $1 and username = $2;",
 			[boardId, username],
@@ -135,6 +158,7 @@ const deleteUser = async (boardId, username) => {
 
 		return true;
 	} catch (e) {
+		console.log(e);
 		await client.query("rollback;");
 		return false;
 	}

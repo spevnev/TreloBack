@@ -18,12 +18,15 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/leave", async (req, res) => {
-	const wss = res.locals.wss;
-	const {boardId, socketId} = req.body;
+	const {boardId} = req.body;
 	if (!boardId) return res.sendStatus(400);
 
 	await boardDB.deleteUser(boardId, res.locals.user.username);
 	res.sendStatus(200);
+
+
+	const wss = res.locals.wss;
+	const socketId = res.locals.socketId;
 
 	wss.to([boardId]).except(socketId).emit("board:deleteUser", {username: res.locals.user.username, boardId});
 });

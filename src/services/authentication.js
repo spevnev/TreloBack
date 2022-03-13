@@ -1,5 +1,6 @@
 const boardDB = require("../db/board");
 const {verifyJwt} = require("./jwt");
+const {wsUsernameToSocketId} = require("../api/tempStorage");
 
 const verify = async token => {
 	if (!token || !token.startsWith("Bearer ")) return ["Error"];
@@ -12,6 +13,7 @@ const authenticated = async (req, res, next) => {
 	if (!data) return res.status(401).send(error);
 
 	res.locals.user = data;
+	res.locals.socketId = wsUsernameToSocketId[data.username];
 
 	next();
 };
@@ -20,7 +22,7 @@ const authenticated = async (req, res, next) => {
 // Authorization (has authority):
 const bodyToLocals = async (req, res) => {
 	const boardId = req.body.boardId || req.params.boardId;
-	if (!boardId) return res.sendStatus(401);
+	if (!boardId) return res.sendStatus(400);
 
 	const board = await boardDB.getBoard(boardId);
 	if (!board) return res.sendStatus(404);

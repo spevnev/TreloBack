@@ -8,17 +8,13 @@ module.exports = ajv.compile({
 			type: "string",
 			format: "uuid",
 		},
-		socketId: {
-			type: "string",
-			minLength: 1,
-		},
 		title: {
 			type: "string",
 			minLength: 1,
 			maxLength: 30,
 		},
 	},
-	required: ["boardId", "socketId", "title"],
+	required: ["boardId", "title"],
 	additionalProperties: false,
 	type: "object",
 });

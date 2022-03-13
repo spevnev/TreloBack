@@ -8,10 +8,6 @@ module.exports = ajv.compile({
 			type: "string",
 			format: "uuid",
 		},
-		socketId: {
-			type: "string",
-			minLength: 1,
-		},
 		order: {
 			type: "array",
 			items: {
@@ -31,7 +27,7 @@ module.exports = ajv.compile({
 			},
 		},
 	},
-	required: ["boardId", "socketId", "order"],
+	required: ["boardId", "order"],
 	additionalProperties: false,
 	type: "object",
 });

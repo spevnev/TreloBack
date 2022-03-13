@@ -9,14 +9,10 @@ module.exports = ajv.compile({
 			type: "string",
 			format: "uuid",
 		},
-		socketId: {
-			type: "string",
-			minLength: 1,
-		},
 		card: type,
 	},
 	definitions: def,
-	required: ["boardId", "socketId", "card"],
+	required: ["boardId", "card"],
 	additionalProperties: false,
 	type: "object",
 });

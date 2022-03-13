@@ -10,6 +10,14 @@ const express = require("express");
 const router = express.Router();
 
 
+// router.get("/wsToken", authenticated, (req, res) => {
+// 	const token = randomUUID();
+//
+// 	wsTokens.add(token);
+//
+// 	res.send(token);
+// });
+
 router.post("/icon", async (req, res) => {
 	const {icon} = req.body;
 	if (!icon) return res.sendStatus(400);

@@ -7,8 +7,6 @@ const app = require("../src/app")();
 
 const sampleUser = {username: "CARD_USER", password: "TEST_PASSWORD", icon: randomUUID()};
 
-const sampleSocketId = "sample_socket_id";
-
 const sampleBoardId = randomUUID();
 const invalidBoardId = "invalid_board_id";
 
@@ -54,7 +52,7 @@ describe("Card", () => {
 		it("Should be 404 (Not found)", async () => {
 			const res = await supertest(app)
 				.post(`/api/card/`)
-				.send({boardId: "any board id", card: sampleCard, socketId: sampleSocketId})
+				.send({boardId: "any board id", card: sampleCard})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(404);
@@ -70,7 +68,7 @@ describe("Card", () => {
 		it("Should be 400 (Bad request)", async () => {
 			const res = await supertest(app)
 				.post(`/api/card/`)
-				.send({boardId: sampleBoardId, card: invalidCard, socketId: sampleSocketId})
+				.send({boardId: sampleBoardId, card: invalidCard})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(400);
@@ -79,7 +77,7 @@ describe("Card", () => {
 		it("Should be 200 (OK)", async () => {
 			const res = await supertest(app)
 				.post(`/api/card/`)
-				.send({boardId: sampleBoardId, card: sampleCard, socketId: sampleSocketId})
+				.send({boardId: sampleBoardId, card: sampleCard})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(200);
@@ -119,7 +117,7 @@ describe("Card", () => {
 		it("Should be 404 (Not found)", async () => {
 			const res = await supertest(app)
 				.put(`/api/card/`)
-				.send({boardId: invalidBoardId, card: sampleCard, socketId: sampleSocketId})
+				.send({boardId: invalidBoardId, card: sampleCard})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(404);
@@ -135,7 +133,7 @@ describe("Card", () => {
 		it("Should be 400 (Bad request)", async () => {
 			const res = await supertest(app)
 				.put(`/api/card/`)
-				.send({boardId: sampleBoardId, card: invalidCard, socketId: sampleSocketId})
+				.send({boardId: sampleBoardId, card: invalidCard})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(400);
@@ -144,7 +142,7 @@ describe("Card", () => {
 		it("Should be 200 (OK)", async () => {
 			const res = await supertest(app)
 				.put(`/api/card/`)
-				.send({boardId: sampleBoardId, card: sampleCard, socketId: sampleSocketId})
+				.send({boardId: sampleBoardId, card: sampleCard})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(200);
@@ -155,7 +153,7 @@ describe("Card", () => {
 		it("Should be 404 (Not found)", async () => {
 			const res = await supertest(app)
 				.put(`/api/card/reorder`)
-				.send({boardId: invalidBoardId, order: sampleOrder, socketId: sampleSocketId})
+				.send({boardId: invalidBoardId, order: sampleOrder})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(404);
@@ -171,7 +169,7 @@ describe("Card", () => {
 		it("Should be 400 (Bad request)", async () => {
 			const res = await supertest(app)
 				.put(`/api/card/reorder`)
-				.send({boardId: sampleBoardId, order: undefined, socketId: sampleSocketId})
+				.send({boardId: sampleBoardId, order: undefined})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(400);
@@ -180,7 +178,7 @@ describe("Card", () => {
 		it("Should be 200 (OK)", async () => {
 			const res = await supertest(app)
 				.put(`/api/card/reorder`)
-				.send({boardId: sampleBoardId, order: sampleOrder, socketId: sampleSocketId})
+				.send({boardId: sampleBoardId, order: sampleOrder})
 				.set("Authorization", `Bearer ${token}`);
 
 			expect(res.statusCode).toBe(200);
@@ -192,7 +190,7 @@ describe("Card", () => {
 			it("Should be 404 (Not found)", async () => {
 				const res = await supertest(app)
 					.post(`/api/card/addFiles`)
-					.send({boardId: invalidBoardId, cardId: sampleCard.id, files: [sampleFile], socketId: sampleSocketId})
+					.send({boardId: invalidBoardId, cardId: sampleCard.id, files: [sampleFile]})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(404);
@@ -208,7 +206,7 @@ describe("Card", () => {
 			it("Should be 400 (Bad request)", async () => {
 				const res = await supertest(app)
 					.post(`/api/card/addFiles`)
-					.send({boardId: sampleBoardId, cardId: sampleCard.id, files: undefined, socketId: sampleSocketId})
+					.send({boardId: sampleBoardId, cardId: sampleCard.id, files: undefined})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(400);
@@ -217,7 +215,7 @@ describe("Card", () => {
 			it("Should be 200 (OK)", async () => {
 				const res = await supertest(app)
 					.post(`/api/card/addFiles`)
-					.send({boardId: sampleBoardId, cardId: sampleCard.id, files: [sampleFile], socketId: sampleSocketId})
+					.send({boardId: sampleBoardId, cardId: sampleCard.id, files: [sampleFile]})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(200);
@@ -228,7 +226,7 @@ describe("Card", () => {
 			it("Should be 404 (Not found)", async () => {
 				const res = await supertest(app)
 					.put(`/api/card/renameFile`)
-					.send({boardId: invalidBoardId, file: sampleFile, socketId: sampleSocketId})
+					.send({boardId: invalidBoardId, file: sampleFile})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(404);
@@ -246,7 +244,7 @@ describe("Card", () => {
 
 				const res = await supertest(app)
 					.put(`/api/card/renameFile`)
-					.send({boardId: sampleBoardId, file: invalidFile, socketId: sampleSocketId})
+					.send({boardId: sampleBoardId, file: invalidFile})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(400);
@@ -255,7 +253,7 @@ describe("Card", () => {
 			it("Should be 200 (OK)", async () => {
 				const res = await supertest(app)
 					.put(`/api/card/renameFile`)
-					.send({boardId: sampleBoardId, file: sampleFile, socketId: sampleSocketId})
+					.send({boardId: sampleBoardId, file: sampleFile})
 					.set("Authorization", `Bearer ${token}`);
 
 				expect(res.statusCode).toBe(200);

@@ -12,10 +12,6 @@ module.exports = ajv.compile({
 			type: "string",
 			format: "uuid",
 		},
-		socketId: {
-			type: "string",
-			minLength: 1,
-		},
 		files: {
 			type: "array",
 			items: {
@@ -35,7 +31,7 @@ module.exports = ajv.compile({
 			},
 		},
 	},
-	required: ["boardId", "socketId", "cardId", "files"],
+	required: ["boardId", "cardId", "files"],
 	additionalProperties: false,
 	type: "object",
 });
