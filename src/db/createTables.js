@@ -63,6 +63,10 @@ const createTables = async () => {
 			url     varchar(256) primary key,
 			filename varchar(32)     not null
 		);`);
+		await client.query(`create index if not exists board_lists_boardid_idx on board_lists using btree (boardid);`);
+		await client.query(`create index if not exists board_users_boardid_idx on board_users using btree (boardid);`);
+		await client.query(`create index if not exists cards_boardid_idx on cards using btree (boardid);`);
+		await client.query(`create index if not exists user_boards_username_idx on user_boards using btree (username);`);
 		await client.query("commit;");
 	} catch (e) {
 		throw new Error(e);
