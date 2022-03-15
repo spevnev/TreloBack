@@ -4,7 +4,7 @@ const createWss = require("./ws");
 
 createTables();
 
-let wssReference = [];
+let wssReference = []; // wtf
 const app = createApp(wssReference);
 
 const server = app.listen(process.env.PORT || 3000, () => console.log("Server is running!"));

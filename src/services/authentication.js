@@ -7,7 +7,7 @@ const verify = async token => {
 	return await verifyJwt(token.split("Bearer ")[1]);
 };
 
-// Authentication
+// Authentication (is authenticated):
 const authenticated = async (req, res, next) => {
 	const [error, data] = await verify(req.headers.authorization);
 	if (!data) return res.status(401).send(error);

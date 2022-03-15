@@ -32,12 +32,6 @@ router.post("/user", isOwner, validateBody(validate.addUser), async (req, res) =
 	const socketId = res.locals.socketId;
 
 	wss.to([boardId]).except(socketId).emit("board:addUser", {boardId, user});
-
-	const targetSocketId = wsUsernameToSocketId[username];
-	if (!targetSocketId) return;
-
-	const {id, title} = await boardDB.getBoard(boardId);
-	wss.to([targetSocketId]).emit("board:add", {id, title});
 });
 
 router.post("/list", isOwner, validateBody(validate.addList), async (req, res) => {
@@ -75,9 +69,8 @@ router.put("/user", isOwner, validateBody(validate.changeUser), async (req, res)
 
 	const wss = res.locals.wss;
 	const socketId = res.locals.socketId;
-	const targetSocketId = wsUsernameToSocketId[username];
 
-	wss.to([boardId, targetSocketId]).except(socketId).emit("board:changeUser", {boardId, username, isOwner});
+	wss.to([boardId]).except(socketId).emit("board:changeUser", {boardId, username, isOwner});
 });
 
 router.put("/", isOwner, validateBody(validate.changeBoard), async (req, res) => {
@@ -130,11 +123,6 @@ router.delete("/user/:boardId/:username", isOwner, async (req, res) => {
 	const socketId = res.locals.socketId;
 
 	wss.to([boardId]).except(socketId).emit("board:deleteUser", {boardId, username});
-
-	const targetSocketId = wsUsernameToSocketId[username];
-	if (!targetSocketId) return;
-
-	wss.to([targetSocketId]).emit("board:delete", boardId);
 });
 
 

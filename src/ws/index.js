@@ -8,18 +8,6 @@ const createWss = server => {
 	const wss = new Server(server, {path: "/ws/", cors: {origin}});
 
 	wss.on("connection", async socket => {
-		// const JWT = socket.handshake.auth.JWT;
-		// const token = socket.handshake.query.token;
-		// if (!JWT || !token) return socket.disconnect(true);
-		//
-		// const [error, data] = await verifyJwt(JWT);
-		// if (!wsTokens.has(token) || error) return socket.disconnect(true);
-		//
-		// wsTokens.delete(token);
-		// wsUsernameToSocketId[data.username] = socket.id;
-		//
-		// registerRoomHandler(wss, socket);
-
 		const JWT = socket.handshake.auth.JWT;
 
 		const [error, data] = await verifyJwt(JWT);
