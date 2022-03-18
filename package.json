@@ -23,7 +23,7 @@
     "helmet": "^5.0.2",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
-    "redis": "^4.0.4",
+    "redis": "^3.0.2",
     "socket.io": "^4.4.1"
   },
   "devDependencies": {
