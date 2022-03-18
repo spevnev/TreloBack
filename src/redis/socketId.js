@@ -1,24 +1,26 @@
 const client = require("./index");
 
-const getSocketId = async username => {
+const getSocketId = username => {
 	try {
-		return await client.get(username);
+		client.get(username, (err, res) => res);
 	} catch (e) {
+		console.log(e);
 		return null;
 	}
 };
 
-const setSocketId = async (username, socketId) => {
+const setSocketId = (username, socketId) => {
 	try {
-		await client.setEx(username, 60 * 60, socketId);
+		client.set(username, socketId, "EX", 60 * 60 * 4);
 	} catch (e) {
+		console.log(e);
 		return null;
 	}
 };
 
-const deleteSocketId = async username => {
+const deleteSocketId = username => {
 	try {
-		await client.del(username);
+		client.del(username);
 	} catch (e) {
 		return null;
 	}
