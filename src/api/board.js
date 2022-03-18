@@ -3,7 +3,6 @@ const validateBody = require("./schemas/validateBody");
 const validate = require("./schemas/board");
 const boardDB = require("../db/board");
 const express = require("express");
-const {wsUsernameToSocketId} = require("./tempStorage");
 
 const router = express.Router();
 

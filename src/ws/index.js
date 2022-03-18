@@ -1,7 +1,7 @@
 const {Server} = require("socket.io");
 const registerRoomHandler = require("./roomHandler");
 const {verifyJwt} = require("../services/jwt");
-const {wsUsernameToSocketId} = require("../api/tempStorage");
+const {setSocketId, deleteSocketId} = require("../redis/socketId");
 
 const createWss = server => {
 	const origin = process.env.FRONTEND_URL || "http://localhost:3001";
@@ -13,8 +13,8 @@ const createWss = server => {
 		const [error, data] = await verifyJwt(JWT);
 		if (error) return socket.disconnect(true);
 
-		wsUsernameToSocketId[data.username] = socket.id;
-		socket.on("disconnect", () => wsUsernameToSocketId[data.username] = undefined);
+		setSocketId(data.username, socket.id);
+		socket.on("disconnect", () => deleteSocketId(data.username));
 
 		registerRoomHandler(wss, socket);
 	});

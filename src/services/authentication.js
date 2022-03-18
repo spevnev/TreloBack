@@ -1,6 +1,6 @@
 const boardDB = require("../db/board");
 const {verifyJwt} = require("./jwt");
-const {wsUsernameToSocketId} = require("../api/tempStorage");
+const {getSocketId} = require("../redis/socketId");
 
 const verify = async token => {
 	if (!token || !token.startsWith("Bearer ")) return ["Error"];
@@ -9,11 +9,13 @@ const verify = async token => {
 
 // Authentication (is authenticated):
 const authenticated = async (req, res, next) => {
-	const [error, data] = await verify(req.headers.authorization);
-	if (!data) return res.status(401).send(error);
+	const [error, user] = await verify(req.headers.authorization);
+	if (!user) return res.status(401).send(error);
 
-	res.locals.user = data;
-	res.locals.socketId = wsUsernameToSocketId[data.username];
+	const socketId = getSocketId(user.username);
+
+	res.locals.user = user;
+	res.locals.socketId = socketId;
 
 	next();
 };
