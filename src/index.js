@@ -1,6 +1,8 @@
 const createApp = require("./app");
 const createTables = require("./db/createTables");
 const createWss = require("./ws");
+const psqlClient = require("./db");
+const redisClient = require("./redis");
 
 createTables();
 
@@ -11,3 +13,9 @@ const server = app.listen(process.env.PORT || 3000, () => console.log("Server is
 const wss = createWss(server);
 
 wssReference.push(wss);
+
+
+process.on("exit", async () => {
+	await psqlClient.end();
+	await redisClient.quit();
+});

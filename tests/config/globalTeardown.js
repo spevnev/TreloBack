@@ -1,9 +1,11 @@
 const DBGlobalTeardown = require("@databases/pg-test/jest/globalTeardown");
-const client = require("../../src/db");
+const psqlClient = require("../../src/db");
+const redisClient = require("../../src/redis");
 
 const globalTeardown = async () => {
 	await DBGlobalTeardown();
-	await client.end();
+	await psqlClient.end();
+	await redisClient.quit();
 };
 
 module.exports = globalTeardown;
