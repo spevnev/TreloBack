@@ -5,9 +5,9 @@ const client = createClient({
 });
 
 client.on("error", e => {
-	if (process.env.NODE_ENV !== "test") throw new Error(e);
+	throw new Error(e);
 });
 
-client.connect().then(() => console.log("Redis is connected!"));
+if (process.env.NODE_ENV !== "test") client.connect().then(() => console.log("Redis is connected!"));
 
 module.exports = client;

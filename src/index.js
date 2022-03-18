@@ -16,6 +16,9 @@ wssReference.push(wss);
 
 
 process.on("exit", async () => {
-	await psqlClient.end();
-	await redisClient.quit();
+	try {
+		await psqlClient.end();
+		await redisClient.quit();
+	} catch (e) {
+	}
 });
