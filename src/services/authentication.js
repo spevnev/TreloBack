@@ -13,7 +13,6 @@ const authenticated = async (req, res, next) => {
 	if (!user) return res.status(401).send(error);
 
 	const socketId = await getSocketId(user.username);
-	console.log("auth", socketId);
 
 	res.locals.user = user;
 	res.locals.socketId = socketId;

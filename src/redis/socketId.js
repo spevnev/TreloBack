@@ -6,11 +6,9 @@ const getSocketId = async username => new Promise((resolve, reject) => {
 
 		client.get(username, (err, res) => {
 			if (err) reject(err);
-			console.log("test");
 			resolve(res);
 		});
 	} catch (e) {
-		console.log(e);
 		return null;
 	}
 });
