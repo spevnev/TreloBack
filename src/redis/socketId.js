@@ -2,9 +2,12 @@ const client = require("./index");
 
 const getSocketId = username => {
 	try {
-		client.get(username, (err, res) => res);
+		client.get(username, (err, res) => {
+			console.log(err);
+			console.log(res);
+			return res;
+		});
 	} catch (e) {
-		console.log(e);
 		return null;
 	}
 };
@@ -13,7 +16,6 @@ const setSocketId = (username, socketId) => {
 	try {
 		client.set(username, socketId, "EX", 60 * 60 * 4);
 	} catch (e) {
-		console.log(e);
 		return null;
 	}
 };
