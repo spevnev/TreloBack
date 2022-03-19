@@ -2,6 +2,8 @@ const client = require("./index");
 
 const getSocketId = async username => new Promise((resolve, reject) => {
 	try {
+		if (process.env.NODE_ENV === "test") resolve();
+
 		client.get(username, (err, res) => {
 			if (err) reject(err);
 			console.log("test");
