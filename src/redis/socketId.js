@@ -3,8 +3,8 @@ const client = require("./index");
 const getSocketId = username => {
 	try {
 		client.get(username, (err, res) => {
-			console.log(username);
-			console.log(res);
+			console.log("get", username);
+			console.log("get", res);
 			return res;
 		});
 	} catch (e) {
