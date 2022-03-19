@@ -12,7 +12,7 @@ const authenticated = async (req, res, next) => {
 	const [error, user] = await verify(req.headers.authorization);
 	if (!user) return res.status(401).send(error);
 
-	const socketId = getSocketId(user.username);
+	const socketId = await getSocketId(user.username);
 	console.log("auth", socketId);
 
 	res.locals.user = user;
