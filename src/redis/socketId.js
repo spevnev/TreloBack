@@ -14,7 +14,10 @@ const getSocketId = username => {
 
 const setSocketId = (username, socketId) => {
 	try {
-		client.set(username, socketId, "EX", 60 * 60 * 4);
+		client.set(username, socketId, "EX", 60 * 60 * 4, (err, res) => {
+			console.log(err);
+			console.log(res);
+		});
 	} catch (e) {
 		return null;
 	}
