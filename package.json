@@ -10,6 +10,7 @@
   "license": "ISC",
   "scripts": {
     "start": "nodemon src",
+    "build": "npm run test && docker image build -t trelo-back .",
     "test": "jest"
   },
   "dependencies": {
