@@ -3,27 +3,11 @@ const cors = require("cors");
 const api = require("./api");
 const express = require("express");
 
-const wssRefMock = [{
-	to: a => ({
-		except: () => ({
-			emit: () => 1,
-		}),
-		emit: () => 1,
-	}),
-}];
-
-const createApp = wssReference => {
-	if (process.env.NODE_ENV === "test") wssReference = wssRefMock;
-
+const createApp = () => {
 	const app = express();
 
 	app.use(helmet());
 	app.use(cors({origin: true}));
-
-	app.use((req, res, next) => {
-		res.locals.wss = wssReference[0];
-		next();
-	});
 
 	app.use("/api/", api);
 

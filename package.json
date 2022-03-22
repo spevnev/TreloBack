@@ -13,7 +13,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@databases/pg-test": "^3.1.2",
     "ajv": "^8.10.0",
     "ajv-formats": "^2.1.1",
     "body-parser": "^1.19.1",
@@ -23,10 +22,11 @@
     "helmet": "^5.0.2",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
-    "redis": "^3.0.2",
+    "redis": "^4.0.4",
     "socket.io": "^4.4.1"
   },
   "devDependencies": {
+    "@databases/pg-test": "^3.1.2",
     "axios": "^0.26.0",
     "jest": "^27.5.1",
     "supertest": "^6.2.2"

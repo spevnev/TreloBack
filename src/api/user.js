@@ -2,6 +2,7 @@ const {authenticated} = require("../services/authentication");
 const userDB = require("../db/user");
 const boardDB = require("../db/board");
 const express = require("express");
+const {publish} = require("../redis/pubSub");
 
 const router = express.Router();
 
@@ -18,17 +19,14 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/leave", async (req, res) => {
+	const username = res.locals.user.username;
 	const {boardId} = req.body;
 	if (!boardId) return res.sendStatus(400);
 
-	await boardDB.deleteUser(boardId, res.locals.user.username);
+	await boardDB.deleteUser(boardId, username);
+
 	res.sendStatus(200);
-
-
-	const wss = res.locals.wss;
-	const socketId = res.locals.socketId;
-
-	wss.to([boardId]).except(socketId).emit("board:deleteUser", {username: res.locals.user.username, boardId});
+	await publish(boardId, res.locals.socketId, "card:changeFile", {boardId, username});
 });
 
 router.put("/favourite", async (req, res) => {
