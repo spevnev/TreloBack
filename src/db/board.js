@@ -3,7 +3,8 @@ const {randomUUID} = require("crypto");
 
 const getBoard = async id => {
 	const res = await client.query(`
-	with l as (
+	with 
+	l as (
         select array_agg(to_json(l)::jsonb - 'boardid') as lists
         from board_lists as l
         where l.boardid = $1::uuid
@@ -13,8 +14,7 @@ const getBoard = async id => {
         from board_users as u
         where u.boardid = $1::uuid
     )
-	select * from boards, u, l where boards.id = $1::uuid;`,
-		[id],
+	select * from boards, u, l where boards.id = $1::uuid;`, [id],
 	).catch(e => null);
 	if (!res || res.rows.length !== 1) return null;
 
