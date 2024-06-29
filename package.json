@@ -1,13 +1,11 @@
 {
   "name": "treloback",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "engines": {
     "node": "17.5.0"
   },
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
     "start": "nodemon src",
     "build": "npm run test && docker image build -t trelo-back .",
